@@ -2,7 +2,7 @@
 Exploratory Data Analysis (EDA) for the Caselaw Access Project Embeddings Dataset
 Dataset: https://huggingface.co/datasets/free-law/Caselaw_Access_Project_embeddings
 
-Uses the HuggingFace Datasets Rows API — fetches only the rows we need
+Uses the HuggingFace Datasets Rows API, fetches only the rows we need
 over HTTPS in small JSON batches. Zero disk usage, starts immediately.
 
 Run:
@@ -10,7 +10,6 @@ Run:
     python caselaw_eda.py
 """
 
-# ── Imports ──────────────────────────────────────────────────────────────────
 import re
 import warnings
 import numpy as np
@@ -29,7 +28,7 @@ from wordcloud import WordCloud
 warnings.filterwarnings("ignore")
 sns.set_theme(style="whitegrid", palette="muted", font_scale=1.1)
 
-# ── Config ────────────────────────────────────────────────────────────────────
+#  Config
 SAMPLE_SIZE   = 5_000
 BATCH_SIZE    = 100      # rows per API request (max allowed is 100)
 RANDOM_STATE  = 42
@@ -39,9 +38,8 @@ OUTPUT_PREFIX = "caselaw_eda"
 
 np.random.seed(RANDOM_STATE)
 
-# ─────────────────────────────────────────────────────────────────────────────
-# 1. LOAD SAMPLE via HuggingFace Rows API
-# ─────────────────────────────────────────────────────────────────────────────
+# load sample via HuggingFace Rows API
+
 print("=" * 60)
 print("1. Fetching dataset sample via HF Rows API …")
 print("=" * 60)
@@ -86,9 +84,7 @@ while len(records) < SAMPLE_SIZE:
 df = pd.DataFrame(records[:SAMPLE_SIZE])
 print(f"\n  Done. Loaded {len(df):,} records.\n")
 
-# ─────────────────────────────────────────────────────────────────────────────
-# 2. BASIC STATISTICS
-# ─────────────────────────────────────────────────────────────────────────────
+#basic stats
 print("=" * 60)
 print("2. Basic Statistics")
 print("=" * 60)
@@ -107,11 +103,10 @@ print(f"\n  Embedding matrix shape : {embed_matrix.shape}")
 print(f"  Embedding value range  : [{embed_matrix.min():.4f}, {embed_matrix.max():.4f}]")
 print(f"  Mean L2 norm           : {np.linalg.norm(embed_matrix, axis=1).mean():.4f}\n")
 
-# ─────────────────────────────────────────────────────────────────────────────
-# 3. VISUALISATIONS
-# ─────────────────────────────────────────────────────────────────────────────
 
-# ── 3a. Text-length distributions ────────────────────────────────────────────
+#visualizations
+
+#Text-length distributions
 print("Plotting text-length distributions …")
 fig, axes = plt.subplots(1, 3, figsize=(16, 4))
 for ax, col, label, color in zip(
@@ -136,7 +131,7 @@ plt.savefig(f"{OUTPUT_PREFIX}_01_text_length.png", dpi=150)
 plt.close()
 print(f"  → Saved {OUTPUT_PREFIX}_01_text_length.png")
 
-# ── 3b. Word-cloud ────────────────────────────────────────────────────────────
+#Word-cloud 
 print("Building word cloud …")
 LEGAL_STOPWORDS = {
     "the","of","and","to","in","a","that","is","for","on","was","were",
@@ -166,7 +161,7 @@ plt.savefig(f"{OUTPUT_PREFIX}_02_wordcloud.png", dpi=150)
 plt.close()
 print(f"  → Saved {OUTPUT_PREFIX}_02_wordcloud.png")
 
-# ── 3c. Top-30 terms bar chart ────────────────────────────────────────────────
+# Top-30 terms bar chart
 print("Plotting top-30 terms …")
 top30 = word_freq.most_common(30)
 words, counts = zip(*top30)
@@ -179,7 +174,7 @@ plt.savefig(f"{OUTPUT_PREFIX}_03_top30_terms.png", dpi=150)
 plt.close()
 print(f"  → Saved {OUTPUT_PREFIX}_03_top30_terms.png")
 
-# ── 3d. Embedding dimension statistics ───────────────────────────────────────
+# Embedding dimension statistics 
 print("Plotting embedding dimension statistics …")
 dim_means = embed_matrix.mean(axis=0)
 dim_stds  = embed_matrix.std(axis=0)
@@ -201,7 +196,7 @@ plt.savefig(f"{OUTPUT_PREFIX}_04_embedding_dims.png", dpi=150)
 plt.close()
 print(f"  → Saved {OUTPUT_PREFIX}_04_embedding_dims.png")
 
-# ── 3e. L2-norm distribution ─────────────────────────────────────────────────
+# L2-norm distribution
 print("Plotting L2-norm distribution …")
 norms = np.linalg.norm(embed_matrix, axis=1)
 fig, ax = plt.subplots(figsize=(8, 4))
@@ -216,7 +211,7 @@ plt.savefig(f"{OUTPUT_PREFIX}_05_l2_norms.png", dpi=150)
 plt.close()
 print(f"  → Saved {OUTPUT_PREFIX}_05_l2_norms.png")
 
-# ── 3f. PCA 2-D projection + explained variance ───────────────────────────────
+#PCA 2-D projection + explained variance
 print("Running PCA …")
 pca    = PCA(n_components=50, random_state=RANDOM_STATE)
 pca_50 = pca.fit_transform(embed_matrix)
@@ -244,7 +239,7 @@ plt.savefig(f"{OUTPUT_PREFIX}_06_pca.png", dpi=150)
 plt.close()
 print(f"  → Saved {OUTPUT_PREFIX}_06_pca.png")
 
-# ── 3g. KMeans clustering ─────────────────────────────────────────────────────
+# KMeans clustering
 print(f"Running KMeans (k={N_CLUSTERS}) …")
 kmeans         = KMeans(n_clusters=N_CLUSTERS, random_state=RANDOM_STATE, n_init=10)
 cluster_labels = kmeans.fit_predict(pca_50)
@@ -275,7 +270,7 @@ plt.savefig(f"{OUTPUT_PREFIX}_08_cluster_sizes.png", dpi=150)
 plt.close()
 print(f"  → Saved {OUTPUT_PREFIX}_08_cluster_sizes.png")
 
-# ── 3h. t-SNE projection ──────────────────────────────────────────────────────
+# t-SNE projection
 print(f"Running t-SNE on {TSNE_SAMPLE} samples (takes ~1–2 min) …")
 tsne_idx    = np.random.choice(len(pca_50), size=min(TSNE_SAMPLE, len(pca_50)), replace=False)
 tsne_input  = pca_50[tsne_idx]
@@ -296,7 +291,7 @@ plt.savefig(f"{OUTPUT_PREFIX}_09_tsne.png", dpi=150)
 plt.close()
 print(f"  → Saved {OUTPUT_PREFIX}_09_tsne.png")
 
-# ── 3i. Cosine similarity heatmap + distribution ─────────────────────────────
+# Cosine similarity heatmap + distribution
 print("Computing cosine-similarity heatmap …")
 HEAT_N   = 300
 heat_idx = np.random.choice(len(embed_matrix), size=HEAT_N, replace=False)
@@ -325,7 +320,7 @@ plt.savefig(f"{OUTPUT_PREFIX}_11_cosine_distribution.png", dpi=150)
 plt.close()
 print(f"  → Saved {OUTPUT_PREFIX}_11_cosine_distribution.png")
 
-# ── 3j. Word count by cluster ─────────────────────────────────────────────────
+# Word count by cluster
 print("Plotting word count by cluster …")
 fig, ax = plt.subplots(figsize=(10, 5))
 df.boxplot(column="word_count", by="cluster", ax=ax,
@@ -340,9 +335,7 @@ plt.savefig(f"{OUTPUT_PREFIX}_12_wordcount_by_cluster.png", dpi=150)
 plt.close()
 print(f"  → Saved {OUTPUT_PREFIX}_12_wordcount_by_cluster.png")
 
-# ─────────────────────────────────────────────────────────────────────────────
-# 4. SUMMARY
-# ─────────────────────────────────────────────────────────────────────────────
+
 print("\n" + "=" * 60)
 print("SUMMARY")
 print("=" * 60)
