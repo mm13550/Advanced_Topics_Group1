@@ -3,11 +3,11 @@ Exploratory Data Analysis (EDA) for the Caselaw Access Project Embeddings Datase
 Dataset: https://huggingface.co/datasets/free-law/Caselaw_Access_Project_embeddings
 
 Uses the HuggingFace Datasets Rows API, fetches only the rows we need
-over HTTPS in small JSON batches. Zero disk usage, starts immediately.
+over HTTPS in small JSON batches.
 
 Run:
     pip install pandas matplotlib seaborn scikit-learn wordcloud requests
-    python caselaw_eda.py
+    python updated_caselaw_eda.py
 """
 
 import re
@@ -28,8 +28,8 @@ from wordcloud import WordCloud
 warnings.filterwarnings("ignore")
 sns.set_theme(style="whitegrid", palette="muted", font_scale=1.1)
 
-#  Config
-SAMPLE_SIZE   = 5_000
+# constants
+SAMPLE_SIZE   = 2_500
 BATCH_SIZE    = 100      # rows per API request (max allowed is 100)
 RANDOM_STATE  = 42
 N_CLUSTERS    = 8
@@ -38,51 +38,58 @@ OUTPUT_PREFIX = "caselaw_eda"
 
 np.random.seed(RANDOM_STATE)
 
-# load sample via HuggingFace Rows API
-
+# loading data via HuggingFace Datasets Rows API
 print("=" * 60)
 print("1. Fetching dataset sample via HF Rows API …")
 print("=" * 60)
 
-DATASET   = "free-law/Caselaw_Access_Project_embeddings"
-SPLIT     = "train"
-API_URL   = f"https://datasets-server.huggingface.co/rows?dataset={DATASET}&config=default&split={SPLIT}"
+DATASET      = "free-law/Caselaw_Access_Project_embeddings"
+SPLIT        = "train"
+TOTAL_ROWS   = 2_000_000   # approximate total rows in dataset
+API_URL      = f"https://datasets-server.huggingface.co/rows?dataset={DATASET}&config=default&split={SPLIT}"
+
+# Generate random offsets spread across the full dataset
+# Each batch fetches BATCH_SIZE rows starting at a random position
+n_batches      = (SAMPLE_SIZE // BATCH_SIZE) + 1
+random_offsets = sorted(np.random.randint(0, TOTAL_ROWS - BATCH_SIZE, size=n_batches))
+print(f"  Sampling {n_batches} random offsets spread across {TOTAL_ROWS:,} total rows …")
 
 records = []
-offset  = 0
 
-while len(records) < SAMPLE_SIZE:
-    url      = f"{API_URL}&offset={offset}&length={BATCH_SIZE}"
+for offset in random_offsets:
+    if len(records) >= SAMPLE_SIZE:
+        break
+
+    url      = f"{API_URL}&offset={int(offset)}&length={BATCH_SIZE}"
     response = requests.get(url, timeout=60)
 
     if response.status_code == 429:
-        print(f"\n  Rate limited — waiting 15 seconds …")
-        time.sleep(15)
-        continue   # retry same offset
+        if records:
+            print(f"\n  Rate limited after {len(records):,} rows — using what we have.")
+            break
+        print(f"\n  Rate limited — waiting 30 seconds …")
+        time.sleep(30)
+        continue
 
     if response.status_code != 200:
-        print(f"\n  API error {response.status_code}, stopping early.")
-        break
+        print(f"\n  API error {response.status_code} at offset {offset}, skipping.")
+        continue
 
-    data  = response.json()
-    rows  = data.get("rows", [])
-    if not rows:
-        print("  No more rows returned.")
-        break
-
+    data = response.json()
+    rows = data.get("rows", [])
     for r in rows:
         row = r["row"]
         records.append({"text": row["text"], "embeddings": row["embeddings"]})
 
-    offset += len(rows)
-    print(f"  Fetched {len(records):,} / {SAMPLE_SIZE:,} rows …", end="\r")
-    time.sleep(0.5)   # avoid rate limiting
+    print(f"  Fetched {len(records):,} / {SAMPLE_SIZE:,} rows (offset {offset:,}) …", end="\r")
+    time.sleep(0.5)
 
-    if len(rows) < BATCH_SIZE:
-        break
+actual_size = len(records)
+df = pd.DataFrame(records[:actual_size])
+print(f"\n  Done. Loaded {len(df):,} records (target was {SAMPLE_SIZE:,}).\n")
 
-df = pd.DataFrame(records[:SAMPLE_SIZE])
-print(f"\n  Done. Loaded {len(df):,} records.\n")
+# Update globals to reflect actual sample
+TSNE_SAMPLE = min(TSNE_SAMPLE, len(df))
 
 #basic stats
 print("=" * 60)
@@ -103,10 +110,9 @@ print(f"\n  Embedding matrix shape : {embed_matrix.shape}")
 print(f"  Embedding value range  : [{embed_matrix.min():.4f}, {embed_matrix.max():.4f}]")
 print(f"  Mean L2 norm           : {np.linalg.norm(embed_matrix, axis=1).mean():.4f}\n")
 
-
 #visualizations
 
-#Text-length distributions
+# text-length distributions
 print("Plotting text-length distributions …")
 fig, axes = plt.subplots(1, 3, figsize=(16, 4))
 for ax, col, label, color in zip(
@@ -131,7 +137,7 @@ plt.savefig(f"{OUTPUT_PREFIX}_01_text_length.png", dpi=150)
 plt.close()
 print(f"  → Saved {OUTPUT_PREFIX}_01_text_length.png")
 
-#Word-cloud 
+#word cloud
 print("Building word cloud …")
 LEGAL_STOPWORDS = {
     "the","of","and","to","in","a","that","is","for","on","was","were",
@@ -161,7 +167,7 @@ plt.savefig(f"{OUTPUT_PREFIX}_02_wordcloud.png", dpi=150)
 plt.close()
 print(f"  → Saved {OUTPUT_PREFIX}_02_wordcloud.png")
 
-# Top-30 terms bar chart
+# top-30 most common terms
 print("Plotting top-30 terms …")
 top30 = word_freq.most_common(30)
 words, counts = zip(*top30)
@@ -174,7 +180,7 @@ plt.savefig(f"{OUTPUT_PREFIX}_03_top30_terms.png", dpi=150)
 plt.close()
 print(f"  → Saved {OUTPUT_PREFIX}_03_top30_terms.png")
 
-# Embedding dimension statistics 
+#embedding dimension statistics
 print("Plotting embedding dimension statistics …")
 dim_means = embed_matrix.mean(axis=0)
 dim_stds  = embed_matrix.std(axis=0)
@@ -196,7 +202,7 @@ plt.savefig(f"{OUTPUT_PREFIX}_04_embedding_dims.png", dpi=150)
 plt.close()
 print(f"  → Saved {OUTPUT_PREFIX}_04_embedding_dims.png")
 
-# L2-norm distribution
+#l2-norm distribution
 print("Plotting L2-norm distribution …")
 norms = np.linalg.norm(embed_matrix, axis=1)
 fig, ax = plt.subplots(figsize=(8, 4))
@@ -211,7 +217,7 @@ plt.savefig(f"{OUTPUT_PREFIX}_05_l2_norms.png", dpi=150)
 plt.close()
 print(f"  → Saved {OUTPUT_PREFIX}_05_l2_norms.png")
 
-#PCA 2-D projection + explained variance
+#pca projection + explained variance
 print("Running PCA …")
 pca    = PCA(n_components=50, random_state=RANDOM_STATE)
 pca_50 = pca.fit_transform(embed_matrix)
@@ -239,7 +245,7 @@ plt.savefig(f"{OUTPUT_PREFIX}_06_pca.png", dpi=150)
 plt.close()
 print(f"  → Saved {OUTPUT_PREFIX}_06_pca.png")
 
-# KMeans clustering
+#kmeans clustering
 print(f"Running KMeans (k={N_CLUSTERS}) …")
 kmeans         = KMeans(n_clusters=N_CLUSTERS, random_state=RANDOM_STATE, n_init=10)
 cluster_labels = kmeans.fit_predict(pca_50)
@@ -270,7 +276,7 @@ plt.savefig(f"{OUTPUT_PREFIX}_08_cluster_sizes.png", dpi=150)
 plt.close()
 print(f"  → Saved {OUTPUT_PREFIX}_08_cluster_sizes.png")
 
-# t-SNE projection
+#tsne projection coloured by cluster
 print(f"Running t-SNE on {TSNE_SAMPLE} samples (takes ~1–2 min) …")
 tsne_idx    = np.random.choice(len(pca_50), size=min(TSNE_SAMPLE, len(pca_50)), replace=False)
 tsne_input  = pca_50[tsne_idx]
@@ -291,7 +297,7 @@ plt.savefig(f"{OUTPUT_PREFIX}_09_tsne.png", dpi=150)
 plt.close()
 print(f"  → Saved {OUTPUT_PREFIX}_09_tsne.png")
 
-# Cosine similarity heatmap + distribution
+#cosine similarity heatmap + distribution
 print("Computing cosine-similarity heatmap …")
 HEAT_N   = 300
 heat_idx = np.random.choice(len(embed_matrix), size=HEAT_N, replace=False)
@@ -320,7 +326,7 @@ plt.savefig(f"{OUTPUT_PREFIX}_11_cosine_distribution.png", dpi=150)
 plt.close()
 print(f"  → Saved {OUTPUT_PREFIX}_11_cosine_distribution.png")
 
-# Word count by cluster
+#word count by cluster
 print("Plotting word count by cluster …")
 fig, ax = plt.subplots(figsize=(10, 5))
 df.boxplot(column="word_count", by="cluster", ax=ax,
@@ -335,7 +341,7 @@ plt.savefig(f"{OUTPUT_PREFIX}_12_wordcount_by_cluster.png", dpi=150)
 plt.close()
 print(f"  → Saved {OUTPUT_PREFIX}_12_wordcount_by_cluster.png")
 
-
+#summary
 print("\n" + "=" * 60)
 print("SUMMARY")
 print("=" * 60)
