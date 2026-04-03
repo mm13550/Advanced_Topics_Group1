@@ -5,10 +5,12 @@ Combines retrieval from case database with LLM generation using IRAC framework.
 
 import os
 import json
+import sys
 from datetime import datetime
 from typing import List, Dict, Optional
 from dotenv import load_dotenv
 
+from pipeline.retrieval_chroma import ChromaDBRetrievalPipeline
 
 class RAGSystem:
     """
@@ -18,7 +20,7 @@ class RAGSystem:
     
     def __init__(
         self, 
-        vector_db_path: str = "vector_db.pkl",
+        vector_db_path: str = "data/chroma_db",    # "vector_db.pkl",
         model_name: str = "llama-3.3-70b-versatile"
     ):
         """
@@ -30,12 +32,14 @@ class RAGSystem:
         """
         load_dotenv()
         
-        from retrieval import RetrievalPipeline
+        #from retrieval import RetrievalPipeline
         from groq import Groq
         
         print("Initializing RAG system...")
         
-        self.retriever = RetrievalPipeline(vector_db_path)
+        #self.retriever = RetrievalPipeline(vector_db_path)
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+        self.retriever = ChromaDBRetrievalPipeline(vector_db_path)
         
         api_key = os.getenv("GROQ_API_KEY")
         if not api_key:
