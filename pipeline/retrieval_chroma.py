@@ -11,8 +11,13 @@ Uses a two-stage retrieval design:
 """
 
 import os
+import torch
 import numpy as np
 from typing import List, Dict, Tuple, Optional
+
+from sentence_transformers import SentenceTransformer, CrossEncoder
+import chromadb
+from chromadb.config import Settings
 
 
 class ChromaDBRetrievalPipeline:
@@ -38,12 +43,7 @@ class ChromaDBRetrievalPipeline:
             use_reranker:     Applies cross-encoder reranking
             reranker_model:   HuggingFace model ID for cross-encoder
         """
-        from sentence_transformers import SentenceTransformer
-        import chromadb
-        from chromadb.config import Settings
-
         print("Starting ChromaDB retrieval pipeline:")
-
 
         # Load embedding model
         from pipeline.config_loader import load_config
@@ -63,7 +63,7 @@ class ChromaDBRetrievalPipeline:
 
         client = chromadb.PersistentClient(
             path=vector_db_path,
-            settings=Settings(anonymized_telemetry=False),
+            settings=Settings(anonymized_telemetry=False)
         )
         
         self.collection = client.get_collection(collection_name)
@@ -77,7 +77,6 @@ class ChromaDBRetrievalPipeline:
 
         if use_reranker:
             try:
-                from sentence_transformers import CrossEncoder
                 self.reranker = CrossEncoder(reranker_model, device="cpu")
                 print(f"Loaded reranker model: {reranker_model}")
             except Exception as e:
@@ -102,7 +101,7 @@ class ChromaDBRetrievalPipeline:
         embedding = self.embedding_model.encode(
             query,
             normalize_embeddings=True,
-            show_progress_bar=False,
+            show_progress_bar=False
         )
         return embedding.astype(np.float32)
 
