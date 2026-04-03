@@ -9,7 +9,6 @@ import pickle
 import requests
 import time
 from typing import List, Dict, Tuple
-from tqdm import tqdm
 
 
 class VectorDatabase:
@@ -45,10 +44,7 @@ class VectorDatabase:
         SPLIT = "train"
         TOTAL_ROWS = 2_000_000
         BATCH_SIZE = 100
-        API_URL = (
-            f"https://datasets-server.huggingface.co/rows?"
-            f"dataset={DATASET}&config=default&split={SPLIT}"
-        )
+        API_URL = f"https://datasets-server.huggingface.co/rows?dataset={DATASET}&config=default&split={SPLIT}"
         
         np.random.seed(random_seed)
         n_batches = (sample_size // BATCH_SIZE) + 1
@@ -56,52 +52,58 @@ class VectorDatabase:
             np.random.randint(0, TOTAL_ROWS - BATCH_SIZE, size=n_batches)
         )
         
-        embeddings_list = []
-        metadata_list = []
+        print(f"Sampling {n_batches} random offsets across {TOTAL_ROWS:,} total rows")
         
-        with tqdm(total=sample_size, desc="Loading") as pbar:
-            for offset in random_offsets:
-                if len(embeddings_list) >= sample_size:
+        records = []
+        
+        for offset in random_offsets:
+            if len(records) >= sample_size:
+                break
+            
+            url = f"{API_URL}&offset={int(offset)}&length={BATCH_SIZE}"
+            response = requests.get(url, timeout=60)
+            
+            if response.status_code == 429:
+                if records:
+                    print(f"\nRate limited after {len(records):,} rows - using what we have.")
                     break
-                
-                url = f"{API_URL}&offset={int(offset)}&length={BATCH_SIZE}"
-                
-                try:
-                    response = requests.get(url, timeout=60)
-                    
-                    if response.status_code == 429:
-                        print("\nRate limited. Waiting 30 seconds...")
-                        time.sleep(30)
-                        continue
-                    
-                    if response.status_code != 200:
-                        continue
-                    
-                    data = response.json()
-                    rows = data.get("rows", [])
-                    
-                    for r in rows:
-                        if len(embeddings_list) >= sample_size:
-                            break
-                        
-                        row = r["row"]
-                        embeddings_list.append(row["embeddings"])
-                        metadata_list.append({
-                            "text": row["text"][:500],
-                            "full_text": row["text"],
-                            "embedding_id": len(embeddings_list) - 1
-                        })
-                        
-                        pbar.update(1)
-                    
-                    time.sleep(0.2)
-                    
-                except Exception as e:
-                    print(f"\nError at offset {offset}: {e}")
-                    continue
+                print(f"\nRate limited - waiting 30 seconds...")
+                time.sleep(30)
+                continue
+            
+            if response.status_code != 200:
+                print(f"\nAPI error {response.status_code} at offset {offset}, skipping.")
+                continue
+            
+            data = response.json()
+            rows = data.get("rows", [])
+            for r in rows:
+                row = r["row"]
+                records.append({"text": row["text"], "embeddings": row["embeddings"]})
+            
+            print(f"Fetched {len(records):,} / {sample_size:,} rows (offset {offset:,})", end="\r")
+            time.sleep(0.5)
         
+        if len(records) == 0:
+            raise ValueError(
+                "Failed to load any embeddings. Possible causes:\n"
+                "1. HuggingFace API rate limit\n"
+                "2. Network connectivity issue\n"
+                "3. Dataset temporarily unavailable\n"
+                "Try again in a few minutes or use smaller sample_size"
+            )
+        
+        embeddings_list = [r["embeddings"] for r in records]
         self.embeddings = np.array(embeddings_list, dtype=np.float32)
-        self.metadata = metadata_list
+        
+        self.metadata = [
+            {
+                "text": r["text"][:500],
+                "full_text": r["text"],
+                "embedding_id": i
+            }
+            for i, r in enumerate(records)
+        ]
         
         print(f"\nLoaded {len(self.embeddings):,} embeddings")
         print(f"Shape: {self.embeddings.shape}")
@@ -217,7 +219,7 @@ def test_search():
     
     if not os.path.exists("vector_db.pkl"):
         print("No database found. Run setup first:")
-        print("python 2_vector_db_setup.py --sample_size 1000")
+        print("python vector_db_setup.py --sample_size 1000")
         return
     
     db.load("vector_db.pkl")

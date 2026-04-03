@@ -1,0 +1,690 @@
+{
+  "summary": {
+    "baseline": {
+      "avg_irac_compliance": 0.53125,
+      "avg_word_count": 312.375,
+      "responses_with_legal_terms": 1.0
+    },
+    "irac_only": {
+      "avg_irac_compliance": 1.0,
+      "avg_word_count": 335.75,
+      "responses_with_legal_terms": 1.0
+    },
+    "rag": {
+      "avg_irac_compliance": 1.0,
+      "avg_word_count": 361.25,
+      "avg_citations": 3.75,
+      "avg_citation_accuracy": 0.6696428571428572,
+      "responses_with_legal_terms": 1.0
+    }
+  },
+  "individual_results": [
+    {
+      "query": "What is probable cause for a search warrant?",
+      "baseline": {
+        "mode": "baseline",
+        "query": "What is probable cause for a search warrant?",
+        "response": "Probable cause is a fundamental concept in the Fourth Amendment of the United States Constitution, which protects individuals from unreasonable searches and seizures. In the context of a search warrant, probable cause refers to the standard that law enforcement must meet to obtain a warrant from a neutral and detached magistrate.\n\nTo establish probable cause, the affiant (usually a law enforcement officer) must provide sufficient facts and circumstances to demonstrate that:\n\n1. **A crime has been committed**: The officer must show that a crime has been or is being committed, and that the evidence of the crime is likely to be found at the location to be searched.\n2. **The location to be searched is likely to contain evidence**: The officer must provide specific facts and circumstances that link the location to be searched to the crime, such as witness statements, surveillance, or other credible information.\n3. **The evidence is likely to be found at the time of the search**: The officer must demonstrate that the evidence is likely to be present at the location at the time of the search, and that it has not been removed or destroyed.\n\nThe probable cause standard is often described as \"more than a mere suspicion, but less than prima facie evidence.\" In other words, the officer must provide enough evidence to make it reasonably likely that the search will uncover evidence of a crime, but not necessarily enough evidence to prove the crime beyond a reasonable doubt.\n\nTo determine whether probable cause exists, the magistrate will consider the \"totality of the circumstances,\" including:\n\n* The credibility of the affiant and any witnesses\n* The reliability of any informants or confidential sources\n* The presence of any corroborating evidence\n* The timing and circumstances of the alleged crime\n\nIf the magistrate finds that probable cause exists, they will issue a search warrant, which authorizes law enforcement to search the specified location and seize any evidence found. If the magistrate does not find probable cause, the warrant will be denied, and law enforcement will not be able to conduct the search.\n\nIt's worth noting that the concept of probable cause can be nuanced and fact-specific, and courts may interpret the standard differently depending on the circumstances of the case. If you have specific questions or concerns about probable cause or search warrants, it's always best to consult with a qualified attorney or law enforcement expert.",
+        "quality": {
+          "word_count": 401,
+          "sentence_count": 14,
+          "avg_sentence_length": 26.733333333333334,
+          "has_legal_terms": true
+        },
+        "irac_structure": {
+          "sections_found": {
+            "issue": true,
+            "rule": true,
+            "application": false,
+            "conclusion": false
+          },
+          "sections_present": 2,
+          "compliance_score": 0.5,
+          "has_full_structure": false
+        },
+        "timestamp": "2026-04-03T00:34:50.927087"
+      },
+      "irac_only": {
+        "mode": "irac_only",
+        "query": "What is probable cause for a search warrant?",
+        "response": "1. **Issue**: The legal question is what constitutes probable cause for the issuance of a search warrant, which is a critical requirement under the Fourth Amendment of the United States Constitution to protect individuals from unreasonable searches and seizures.\n\n2. **Rule**: The relevant legal principle is defined by the Fourth Amendment, which requires that \"no Warrants shall issue, but upon probable cause, supported by Oath or affirmation, and particularly describing the place to be searched, and the persons or things to be seized.\" Probable cause is generally understood as a reasonable belief, based on the facts and circumstances known to the officer at the time, that evidence of a crime will be found in the place to be searched. The standard for probable cause is not as high as that required for a conviction but is more than a mere suspicion. It is often determined by the totality of the circumstances, considering factors such as the credibility of informants, the reliability of the information, and the corroboration of details by independent police work.\n\n3. **Application**: To apply for a search warrant, law enforcement must present a sworn affidavit to a neutral magistrate, detailing the facts and circumstances that lead them to believe that probable cause exists. This might include eyewitness accounts, physical evidence, admissions by the suspect, or information from reliable informants. The magistrate then reviews the affidavit to determine if the information provided establishes probable cause. If the magistrate finds probable cause, a search warrant is issued, allowing law enforcement to search the specified location for the items described in the warrant. The application of probable cause requires a nuanced understanding of the specific facts of each case and how they align with legal precedents and the Fourth Amendment's protections.\n\n4. **Conclusion**: Probable cause for a search warrant exists when law enforcement can demonstrate a reasonable belief, based on the totality of the circumstances and the facts known at the time, that evidence of a crime will be found in the place to be searched. This standard is designed to balance the need for law enforcement to investigate crimes with the individual's right to be free from unreasonable searches and seizures. While the determination of probable cause can be complex and fact-specific, it is a crucial safeguard against abuses of power and ensures that search warrants are issued only when there is a legitimate basis for believing that a search will yield evidence of criminal activity.",
+        "quality": {
+          "word_count": 407,
+          "sentence_count": 17,
+          "avg_sentence_length": 22.61111111111111,
+          "has_legal_terms": true
+        },
+        "irac_structure": {
+          "sections_found": {
+            "issue": true,
+            "rule": true,
+            "application": true,
+            "conclusion": true
+          },
+          "sections_present": 4,
+          "compliance_score": 1.0,
+          "has_full_structure": true
+        },
+        "timestamp": "2026-04-03T00:34:50.927146"
+      },
+      "rag": {
+        "mode": "rag",
+        "query": "What is probable cause for a search warrant?",
+        "response": "## Issue\nThe legal question presented is: What constitutes probable cause for a search warrant?\n\n## Rule\nProbable cause for a search warrant is a legal principle that requires a reasonable belief, based on the facts and circumstances, that a crime has been committed or that evidence of a crime will be found in the place to be searched. While the provided cases do not directly address the definition of probable cause, Case 3 (WASTE, P. J.) involves a search-warrant and the concept of jurisdiction in issuing such a warrant. According to the principles of jurisdiction and the issuance of search-warrants, as seen in Case 3, the court would consider whether the defendant acted within their jurisdiction in issuing the search-warrant. However, the cases provided do not fully address the specific requirements for probable cause.\n\n## Application\nApplying the general principles of probable cause, it can be inferred that the court would consider factors such as the reliability of the information, the credibility of the informant, and the corroboration of the information. In the context of Case 3, the court examined whether the search-warrant was issued in excess of jurisdiction, which implies that the court considered the validity of the warrant and the basis for its issuance. Although the cases do not provide a direct definition of probable cause, they suggest that the court would scrutinize the circumstances surrounding the issuance of the search-warrant to determine its validity.\n\n## Conclusion\nBased on the provided cases, it can be concluded that probable cause for a search warrant requires a reasonable belief, based on the facts and circumstances, that a crime has been committed or that evidence of a crime will be found in the place to be searched. However, the cases do not fully address the specific requirements for probable cause, and a more comprehensive analysis of relevant legal precedents would be necessary to provide a definitive answer. As seen in Case 3 (WASTE, P. J.), the court's examination of the search-warrant's validity implies that the court considers the underlying facts and circumstances in determining probable cause.",
+        "num_cases_retrieved": 3,
+        "quality": {
+          "word_count": 346,
+          "sentence_count": 15,
+          "avg_sentence_length": 21.625,
+          "has_legal_terms": true
+        },
+        "irac_structure": {
+          "sections_found": {
+            "issue": true,
+            "rule": true,
+            "application": true,
+            "conclusion": true
+          },
+          "sections_present": 4,
+          "compliance_score": 1.0,
+          "has_full_structure": true
+        },
+        "citations": {
+          "total_citations": 4,
+          "valid_citations": 1,
+          "citation_accuracy": 0.25,
+          "hallucination_rate": 0.75,
+          "cited_case_ids": [
+            3
+          ]
+        },
+        "timestamp": "2026-04-03T00:34:50.927269"
+      }
+    },
+    {
+      "query": "What are the elements of negligence in tort law?",
+      "baseline": {
+        "mode": "baseline",
+        "query": "What are the elements of negligence in tort law?",
+        "response": "In tort law, the elements of negligence are as follows:\n\n1. **Duty of Care**: The defendant must have owed a duty of care to the plaintiff. This means that the defendant had a responsibility to act with reasonable care towards the plaintiff to prevent harm.\n\n2. **Breach of Duty**: The defendant must have breached their duty of care. This means that the defendant failed to act with the level of care that a reasonable person would have exercised in the same circumstances.\n\n3. **Causation**: The breach of duty must have caused the harm or injury to the plaintiff. This can be divided into two parts:\n   - **Actual Causation** (also known as \"cause in fact\"): The defendant's breach of duty must have actually caused the harm.\n   - **Proximate Causation** (also known as \"legal causation\"): The harm must have been a foreseeable consequence of the defendant's breach of duty.\n\n4. **Damages**: The plaintiff must have suffered damages or harm as a result of the defendant's breach of duty. This can include physical harm, emotional distress, or financial losses.\n\nTo establish a claim of negligence, the plaintiff must prove all four of these elements. If any one of these elements is missing, the claim for negligence will fail.",
+        "quality": {
+          "word_count": 205,
+          "sentence_count": 15,
+          "avg_sentence_length": 12.8125,
+          "has_legal_terms": true
+        },
+        "irac_structure": {
+          "sections_found": {
+            "issue": false,
+            "rule": true,
+            "application": false,
+            "conclusion": false
+          },
+          "sections_present": 1,
+          "compliance_score": 0.25,
+          "has_full_structure": false
+        },
+        "timestamp": "2026-04-03T00:34:55.794977"
+      },
+      "irac_only": {
+        "mode": "irac_only",
+        "query": "What are the elements of negligence in tort law?",
+        "response": "1. **Issue**: The legal question is what are the essential elements that must be proven to establish a claim of negligence in tort law.\n\n2. **Rule**: In tort law, the elements of negligence are derived from common law principles and are generally recognized as follows: \n   - **Duty of care**: The defendant must have owed the plaintiff a duty of care.\n   - **Breach of duty**: The defendant must have breached that duty of care, typically by failing to act as a reasonable person would under similar circumstances.\n   - **Causation**: The breach of duty must have caused the plaintiff's injury. This includes both actual cause (cause in fact) and proximate cause (the injury was a foreseeable consequence of the breach).\n   - **Damage**: The plaintiff must have suffered damages as a result of the defendant's breach of duty. These damages can be physical, emotional, or financial.\n\n3. **Application**: To apply these rules, one must consider whether the defendant had a duty to protect the plaintiff from harm, whether the defendant's actions or omissions fell short of the standard expected of a reasonable person, whether those actions directly led to the plaintiff's injury, and whether the plaintiff incurred actual damages. For instance, if a driver fails to stop at a red light (breach of duty) and hits another car, causing injury to the occupants (causation and damage), and it is established that the driver had a duty to follow traffic laws (duty of care), then the elements of negligence could be considered met.\n\n4. **Conclusion**: In conclusion, to establish a claim of negligence in tort law, a plaintiff must prove that the defendant owed them a duty of care, breached that duty, that the breach caused their injury, and that they suffered actual damages as a result. These elements are fundamental to tort law and are applied in various jurisdictions, albeit with some nuances based on local legal precedents and statutory provisions.",
+        "quality": {
+          "word_count": 318,
+          "sentence_count": 15,
+          "avg_sentence_length": 19.875,
+          "has_legal_terms": true
+        },
+        "irac_structure": {
+          "sections_found": {
+            "issue": true,
+            "rule": true,
+            "application": true,
+            "conclusion": true
+          },
+          "sections_present": 4,
+          "compliance_score": 1.0,
+          "has_full_structure": true
+        },
+        "timestamp": "2026-04-03T00:34:55.795027"
+      },
+      "rag": {
+        "mode": "rag",
+        "query": "What are the elements of negligence in tort law?",
+        "response": "## Step 1: Issue\nThe legal question at hand is to identify the elements of negligence in tort law. This requires an understanding of the fundamental principles of tort law and the specific components that constitute negligence.\n\n## Step 2: Rule\nTo establish negligence, several key elements must be present. While the provided cases do not explicitly outline all the elements of negligence, they touch on aspects related to negligence, such as the duty of care and the consequences of breach of that duty. For instance, Case 2 discusses the implied liability of municipal corporations for negligence in respect to corporate duties, highlighting the importance of a duty of care. Case 1 involves a suit for damages due to alleged negligence, implying the existence of a duty, breach, causation, and damages.\n\n## Step 3: Application\nApplying the principles from the cases, we can infer that the elements of negligence generally include:\n1. **Duty of Care**: The defendant must have owed the plaintiff a duty of care. This is implied in Case 2, where municipal corporations have a duty to keep avenues of travel in a reasonably safe condition.\n2. **Breach of Duty**: The defendant must have breached this duty of care. This can be seen in Case 1, where the plaintiff alleges that the defendants' negligence led to their injuries.\n3. **Causation**: The breach of duty must have caused the plaintiff's injuries. Case 1 implies this element, as the plaintiff's injuries are alleged to have resulted from the defendants' actions.\n4. **Damages**: The plaintiff must have suffered damages as a result of the breach of duty. Case 1 and Case 3 both involve plaintiffs seeking damages for injuries suffered.\n\n## Step 4: Conclusion\nWhile the provided cases do not comprehensively outline the elements of negligence, they support the understanding that negligence in tort law involves a duty of care, a breach of that duty, causation linking the breach to the plaintiff's injuries, and the existence of damages. These elements are fundamental to establishing a claim of negligence. It is essential to note that the specific details of these elements can vary depending on the jurisdiction and the particular circumstances of each case. For a complete understanding, consulting a broader range of legal precedents and statutes would be necessary.",
+        "num_cases_retrieved": 3,
+        "quality": {
+          "word_count": 378,
+          "sentence_count": 22,
+          "avg_sentence_length": 16.434782608695652,
+          "has_legal_terms": true
+        },
+        "irac_structure": {
+          "sections_found": {
+            "issue": true,
+            "rule": true,
+            "application": true,
+            "conclusion": true
+          },
+          "sections_present": 4,
+          "compliance_score": 1.0,
+          "has_full_structure": true
+        },
+        "citations": {
+          "total_citations": 7,
+          "valid_citations": 3,
+          "citation_accuracy": 0.42857142857142855,
+          "hallucination_rate": 0.5714285714285714,
+          "cited_case_ids": [
+            1,
+            2,
+            3
+          ]
+        },
+        "timestamp": "2026-04-03T00:34:55.795105"
+      }
+    },
+    {
+      "query": "When can a landlord evict a tenant without notice?",
+      "baseline": {
+        "mode": "baseline",
+        "query": "When can a landlord evict a tenant without notice?",
+        "response": "The laws regarding eviction without notice vary by jurisdiction, but I can provide some general guidance. In most states, a landlord can evict a tenant without notice in limited circumstances, such as:\n\n1. **Non-payment of rent**: If a tenant fails to pay rent, the landlord may be able to evict them without notice, but this is typically only allowed after a certain number of days have passed (e.g., 3-5 days).\n2. **Serious breach of lease**: If a tenant commits a serious breach of the lease, such as causing significant damage to the property, engaging in illegal activities, or posing a threat to others, the landlord may be able to evict them without notice.\n3. **Emergency situations**: In some cases, a landlord may be able to evict a tenant without notice if there is an emergency situation, such as a fire or other hazard that makes the property uninhabitable.\n4. **Holdover tenants**: If a tenant remains in the property after their lease has expired or been terminated, the landlord may be able to evict them without notice.\n5. **Squatters or trespassers**: If someone is occupying the property without a valid lease or permission, the landlord may be able to evict them without notice.\n\nHowever, it's essential to note that these circumstances are typically subject to specific requirements and procedures, and the landlord must usually follow the applicable state and local laws. In many cases, a landlord will still need to provide some form of notice, even if it's a shorter notice period than usual.\n\nTo determine the specific requirements for eviction without notice in your area, I would recommend consulting with a local attorney or checking the relevant state and local laws. Additionally, it's always best for landlords to follow proper eviction procedures to avoid potential liability and ensure a smooth process.",
+        "quality": {
+          "word_count": 301,
+          "sentence_count": 17,
+          "avg_sentence_length": 16.72222222222222,
+          "has_legal_terms": true
+        },
+        "irac_structure": {
+          "sections_found": {
+            "issue": false,
+            "rule": true,
+            "application": true,
+            "conclusion": false
+          },
+          "sections_present": 2,
+          "compliance_score": 0.5,
+          "has_full_structure": false
+        },
+        "timestamp": "2026-04-03T00:35:00.764771"
+      },
+      "irac_only": {
+        "mode": "irac_only",
+        "query": "When can a landlord evict a tenant without notice?",
+        "response": "1. **Issue**: Under what circumstances can a landlord evict a tenant without providing prior notice, and what are the legal grounds for such an action?\n\n2. **Rule**: The rules regarding eviction without notice vary by jurisdiction, but generally, they are governed by state and local landlord-tenant laws. In many places, a landlord can evict a tenant without notice if the tenant has seriously violated the terms of the lease or rental agreement, such as by committing illegal activities on the premises, causing significant damage to the property, or posing a threat to the health and safety of others. Specific grounds for eviction without notice may include non-payment of rent (though this often requires a short notice period), breach of lease terms, illegal activities, or abandonment of the property. It's also worth noting that some jurisdictions have specific procedures, such as expedited eviction processes for certain violations.\n\n3. **Application**: Applying these rules, a landlord might be able to evict a tenant without notice if the tenant is engaging in drug-related activity on the premises, has caused significant damage to the property, or is posing a direct threat to others. For example, if a tenant is found to be manufacturing drugs in the rental unit, the landlord might have grounds for immediate eviction without providing a standard notice period, depending on the local laws. However, the landlord must still follow the specific legal procedures outlined by the jurisdiction, which might include filing an eviction lawsuit and obtaining a court order.\n\n4. **Conclusion**: A landlord can evict a tenant without notice under specific, serious circumstances such as illegal activities, significant property damage, or health and safety threats, as defined by local and state laws. However, the exact conditions and procedures for such evictions vary significantly by jurisdiction, and landlords must adhere to these legal requirements to avoid potential legal repercussions. It's advisable for landlords to consult with a legal professional to ensure compliance with all applicable laws and regulations when considering eviction.",
+        "quality": {
+          "word_count": 329,
+          "sentence_count": 15,
+          "avg_sentence_length": 20.5625,
+          "has_legal_terms": true
+        },
+        "irac_structure": {
+          "sections_found": {
+            "issue": true,
+            "rule": true,
+            "application": true,
+            "conclusion": true
+          },
+          "sections_present": 4,
+          "compliance_score": 1.0,
+          "has_full_structure": true
+        },
+        "timestamp": "2026-04-03T00:35:00.764816"
+      },
+      "rag": {
+        "mode": "rag",
+        "query": "When can a landlord evict a tenant without notice?",
+        "response": "## Step 1: Issue\nThe legal question at hand is under what circumstances a landlord can evict a tenant without providing prior notice. This is a matter of landlord-tenant law, which varies by jurisdiction but often involves specific procedures and requirements for eviction, including notice periods.\n\n## Step 2: Rule\nFrom the provided cases, we can identify some relevant legal principles. Case 1 discusses the Ellis Act and the San Francisco Residential Rent Stabilization and Arbitration Ordinance, specifically mentioning the requirement for relocation payments in certain circumstances (section 37.9A(e) of the San Francisco Administrative Code). However, it does not directly address the issue of eviction without notice. Case 2 involves a contract dispute over a lease agreement and the description of leased premises, which does not directly pertain to eviction procedures. Case 3 touches on the terms of a lease agreement, particularly regarding the sale of leased premises and the valuation of improvements, but also does not directly address eviction without notice.\n\n## Step 3: Application\nGiven the provided cases, there is limited direct application to the question of when a landlord can evict a tenant without notice. Typically, landlord-tenant laws require landlords to provide tenants with notice before initiating eviction proceedings, with the specific requirements (such as the length of notice) varying depending on the jurisdiction and the reason for the eviction. The cases provided do not offer clear guidance on this specific issue, as they primarily deal with other aspects of landlord-tenant law and contract interpretation.\n\n## Step 4: Conclusion\nBased on the information provided and the cases cited, it is not possible to definitively state when a landlord can evict a tenant without notice, as the relevant laws and regulations are not directly addressed in the cases. Generally, eviction laws require notice to be given to the tenant, but the specifics can depend heavily on local laws and the circumstances of the tenancy. For accurate and applicable guidance, one would need to consult the specific statutes and regulations of the relevant jurisdiction. The provided cases do not fully address the question posed, highlighting the need for additional legal research into the specific laws governing landlord-tenant relationships in the area of interest.",
+        "num_cases_retrieved": 3,
+        "quality": {
+          "word_count": 364,
+          "sentence_count": 15,
+          "avg_sentence_length": 22.75,
+          "has_legal_terms": true
+        },
+        "irac_structure": {
+          "sections_found": {
+            "issue": true,
+            "rule": true,
+            "application": true,
+            "conclusion": true
+          },
+          "sections_present": 4,
+          "compliance_score": 1.0,
+          "has_full_structure": true
+        },
+        "citations": {
+          "total_citations": 3,
+          "valid_citations": 3,
+          "citation_accuracy": 1.0,
+          "hallucination_rate": 0.0,
+          "cited_case_ids": [
+            1,
+            2,
+            3
+          ]
+        },
+        "timestamp": "2026-04-03T00:35:00.764880"
+      }
+    },
+    {
+      "query": "What constitutes a valid contract?",
+      "baseline": {
+        "mode": "baseline",
+        "query": "What constitutes a valid contract?",
+        "response": "A valid contract is a legally binding agreement between two or more parties that meets certain essential elements. These elements are:\n\n1. **Offer**: One party must make a clear and definite offer to the other party. The offer must be specific, unambiguous, and communicated to the other party.\n2. **Acceptance**: The other party must accept the offer in its entirety, without making any changes or conditions. Acceptance can be expressed through words, actions, or written communication.\n3. **Consideration**: Both parties must provide something of value in exchange for the other party's promise or performance. Consideration can be a promise, an act, or a forbearance (i.e., refraining from doing something).\n4. **Capacity**: Both parties must have the legal capacity to enter into a contract. This means they must be:\n\t* Of sound mind (i.e., not mentally incapacitated)\n\t* Of legal age (i.e., at least 18 years old in most jurisdictions)\n\t* Not under undue influence or coercion\n5. **Legality**: The contract must be for a lawful purpose and not violate any laws or public policy.\n6. **Mutuality of obligation**: Both parties must be bound by the contract, and each party must have a legal obligation to perform their respective duties.\n7. **Certainty**: The contract must be clear and certain in its terms, including the subject matter, price, and other essential details.\n8. **Intention to be bound**: Both parties must intend to be bound by the contract and create a legally enforceable agreement.\n\nIf a contract lacks any of these essential elements, it may be considered invalid or unenforceable. However, the specific requirements for a valid contract may vary depending on the jurisdiction and the type of contract.\n\nIt's worth noting that some contracts, such as those involving real estate or certain types of business transactions, may require additional formalities, such as written documentation or notarization, to be considered valid. If you have any specific questions or concerns about a contract, it's always best to consult with a qualified attorney for guidance.",
+        "quality": {
+          "word_count": 330,
+          "sentence_count": 30,
+          "avg_sentence_length": 10.64516129032258,
+          "has_legal_terms": true
+        },
+        "irac_structure": {
+          "sections_found": {
+            "issue": true,
+            "rule": true,
+            "application": false,
+            "conclusion": false
+          },
+          "sections_present": 2,
+          "compliance_score": 0.5,
+          "has_full_structure": false
+        },
+        "timestamp": "2026-04-03T00:35:05.730919"
+      },
+      "irac_only": {
+        "mode": "irac_only",
+        "query": "What constitutes a valid contract?",
+        "response": "1. **Issue**: The legal question at hand is what elements are necessary to constitute a valid contract. In other words, what are the essential components that must be present for a contract to be considered legally binding?\n\n2. **Rule**: The relevant legal principles that govern the formation of a valid contract are often referred to as the \"elements of a contract.\" These elements typically include:\n   - **Offer**: One party must make a clear and definite offer to the other party.\n   - **Acceptance**: The other party must accept the offer in its entirety, without modification.\n   - **Consideration**: Both parties must provide something of value, such as goods, services, or a promise to do something.\n   - **Capacity**: The parties entering into the contract must have the legal capacity to do so, meaning they are of sound mind, are not minors (unless emancipated), and are not under the influence of drugs or alcohol.\n   - **Legality**: The subject matter of the contract must be legal and not against public policy.\n   - **Mutual Intent**: The parties must have a mutual understanding and intention to be bound by the contract.\n   - **Form**: In some cases, the contract must be in a specific form, such as in writing, to be enforceable.\n\n3. **Application**: Applying these rules to the question, for a contract to be valid, all the aforementioned elements must be present. For example, if one party makes an offer but the other party does not accept it, or if the subject matter of the contract is illegal, the contract would not be considered valid. Similarly, if one of the parties lacks the capacity to enter into a contract, the contract could be voidable or void.\n\n4. **Conclusion**: In conclusion, a valid contract is one that includes a clear offer, acceptance of that offer, consideration provided by both parties, legal capacity of the parties to contract, legality of the contract's subject matter, mutual intent to be bound, and compliance with any statutory requirements regarding the form of the contract. If any of these essential elements are missing, the contract may not be enforceable. It's worth noting that the specific requirements can vary by jurisdiction, and the interpretation of these elements can depend on the circumstances of each case and the applicable laws.",
+        "quality": {
+          "word_count": 375,
+          "sentence_count": 20,
+          "avg_sentence_length": 17.857142857142858,
+          "has_legal_terms": true
+        },
+        "irac_structure": {
+          "sections_found": {
+            "issue": true,
+            "rule": true,
+            "application": true,
+            "conclusion": true
+          },
+          "sections_present": 4,
+          "compliance_score": 1.0,
+          "has_full_structure": true
+        },
+        "timestamp": "2026-04-03T00:35:05.730988"
+      },
+      "rag": {
+        "mode": "rag",
+        "query": "What constitutes a valid contract?",
+        "response": "## Step 1: Issue\nThe legal question at hand is what constitutes a valid contract. This involves understanding the essential elements that must be present for a contract to be considered legally binding.\n\n## Step 2: Rule\nAccording to general principles of contract law, a valid contract typically requires several key elements: offer, acceptance, consideration, capacity, and legality. While the provided cases do not directly address all these elements, they touch on aspects related to contract formation and validity. For instance, Case 1 discusses the issue of whether a verbal contract was made, highlighting the importance of evidence in establishing the existence of a contract. Case 2 and Case 3, while focusing on specific issues like the negotiability of securities and the verification of answers in complaints, imply the need for clear and verifiable agreements.\n\n## Step 3: Application\nApplying the rules to the question, we can infer that for a contract to be valid, there must be a clear and demonstrable agreement between parties. This agreement must be supported by evidence, as seen in Case 1, where the court considered conversations between the plaintiff and defendant as evidence of an alleged contract. Furthermore, the terms of the contract must be legally enforceable, and the parties must have the capacity to enter into such an agreement. The provided cases do not explicitly outline all the necessary elements of a valid contract but suggest that the existence of a contract and its terms must be verifiable and not contrary to law.\n\n## Step 4: Conclusion\nIn conclusion, while the provided cases do not comprehensively address all aspects of what constitutes a valid contract, they underscore the importance of evidence, verifiability, and legal enforceability. A valid contract is one that is based on a clear agreement, supported by evidence, and compliant with legal requirements. However, for a detailed understanding of all necessary elements, one would need to consult a broader range of legal precedents and contract law principles beyond the specific cases provided.\n\nThe final answer is: There is no single final numerical answer to this question as it requires a descriptive analysis of legal principles.",
+        "num_cases_retrieved": 3,
+        "quality": {
+          "word_count": 354,
+          "sentence_count": 14,
+          "avg_sentence_length": 23.6,
+          "has_legal_terms": true
+        },
+        "irac_structure": {
+          "sections_found": {
+            "issue": true,
+            "rule": true,
+            "application": true,
+            "conclusion": true
+          },
+          "sections_present": 4,
+          "compliance_score": 1.0,
+          "has_full_structure": true
+        },
+        "citations": {
+          "total_citations": 4,
+          "valid_citations": 3,
+          "citation_accuracy": 0.75,
+          "hallucination_rate": 0.25,
+          "cited_case_ids": [
+            1,
+            2,
+            3
+          ]
+        },
+        "timestamp": "2026-04-03T00:35:05.731059"
+      }
+    },
+    {
+      "query": "What is the difference between murder and manslaughter?",
+      "baseline": {
+        "mode": "baseline",
+        "query": "What is the difference between murder and manslaughter?",
+        "response": "The difference between murder and manslaughter lies in the intent and circumstances surrounding the killing of another person. Both are serious crimes, but they have distinct definitions and consequences.\n\n**Murder:**\nMurder is typically defined as the intentional and premeditated killing of another person. It involves a deliberate act to take someone's life, often with malice aforethought. Murder can be further divided into degrees, such as:\n\n* First-degree murder: premeditated and deliberate killing, often with planning and intent.\n* Second-degree murder: intentional killing, but without premeditation or planning.\n\n**Manslaughter:**\nManslaughter, on the other hand, is the killing of another person without intent or premeditation. It can be further divided into two categories:\n\n* Voluntary manslaughter: the killing is intentional, but it occurs in the heat of passion, often in response to a provocation, such as a fight or an argument.\n* Involuntary manslaughter: the killing is unintentional, often resulting from reckless or negligent behavior, such as a car accident or a workplace accident.\n\nThe key differences between murder and manslaughter are:\n\n1. **Intent**: Murder involves a deliberate intent to kill, while manslaughter often lacks intent or involves a lesser degree of intent.\n2. **Premeditation**: Murder typically involves planning and premeditation, while manslaughter often occurs spontaneously or without forethought.\n3. **Circumstances**: Murder often involves a more calculated and deliberate act, while manslaughter may involve a momentary lapse in judgment or a reckless act.\n\nIt's essential to note that the specific definitions and distinctions between murder and manslaughter can vary depending on the jurisdiction and local laws. If you have a specific question or concern, it's best to consult with a qualified attorney or legal expert in your area.",
+        "quality": {
+          "word_count": 276,
+          "sentence_count": 17,
+          "avg_sentence_length": 15.333333333333334,
+          "has_legal_terms": true
+        },
+        "irac_structure": {
+          "sections_found": {
+            "issue": true,
+            "rule": true,
+            "application": false,
+            "conclusion": false
+          },
+          "sections_present": 2,
+          "compliance_score": 0.5,
+          "has_full_structure": false
+        },
+        "timestamp": "2026-04-03T00:35:10.018099"
+      },
+      "irac_only": {
+        "mode": "irac_only",
+        "query": "What is the difference between murder and manslaughter?",
+        "response": "1. **Issue**: The legal question at hand is what distinguishes murder from manslaughter, particularly in terms of their definitions, elements, and legal implications.\n\n2. **Rule**: The key distinction between murder and manslaughter lies in the intent and state of mind of the perpetrator at the time of the crime. Murder is generally defined as the unlawful killing of another human being with malice aforethought, which can include intentions such as premeditation, deliberation, or a wanton disregard for human life. Manslaughter, on the other hand, is typically categorized into two types: voluntary manslaughter, which involves an intentional killing but with a mitigating factor such as heat of passion, and involuntary manslaughter, which involves an unintentional killing resulting from recklessness or criminal negligence.\n\n3. **Application**: Applying these rules, if a person intentionally kills another after premeditation or deliberation, they would likely be charged with murder. However, if the killing was intentional but occurred in the heat of passion following a provocation, it might be considered voluntary manslaughter. In cases where the killing was unintentional but resulted from the person's reckless or negligent behavior, the charge would likely be involuntary manslaughter. The specific circumstances of each case, including the actions of the perpetrator and their state of mind, are crucial in determining whether the crime constitutes murder or manslaughter.\n\n4. **Conclusion**: In conclusion, the primary difference between murder and manslaughter is the level of intent and the state of mind of the perpetrator. Murder involves malice aforethought and typically carries more severe penalties, while manslaughter involves either a mitigated intent (voluntary) or a lack of intent (involuntary), resulting in less severe penalties compared to murder. It's important to note that legal definitions and distinctions can vary by jurisdiction, and specific outcomes depend on the laws of the relevant country, state, or region.",
+        "quality": {
+          "word_count": 299,
+          "sentence_count": 15,
+          "avg_sentence_length": 18.6875,
+          "has_legal_terms": true
+        },
+        "irac_structure": {
+          "sections_found": {
+            "issue": true,
+            "rule": true,
+            "application": true,
+            "conclusion": true
+          },
+          "sections_present": 4,
+          "compliance_score": 1.0,
+          "has_full_structure": true
+        },
+        "timestamp": "2026-04-03T00:35:10.018145"
+      },
+      "rag": {
+        "mode": "rag",
+        "query": "What is the difference between murder and manslaughter?",
+        "response": "## Step 1: Issue\nThe legal question at hand is to determine the distinction between murder and manslaughter, which are two separate offenses under the law.\n\n## Step 2: Rule\nAccording to the provided cases, the distinction between murder and manslaughter is not explicitly defined. However, we can infer from Case 2 that attempted voluntary manslaughter (Pen. Code, \u00a7 664/193) is considered a lesser but included offense of assault with an intent to commit murder (Pen. Code, \u00a7 217). This suggests that manslaughter is generally considered a less severe offense than murder, often involving a lesser degree of intent or culpability.\n\n## Step 3: Application\nApplying the rules to the question, we can conclude that the primary difference between murder and manslaughter lies in the level of intent and culpability. Murder typically involves an intent to kill, whereas manslaughter may involve a lesser degree of intent, such as recklessness or negligence. However, the provided cases do not fully address the distinction between murder and manslaughter, and further research would be necessary to provide a comprehensive answer.\n\n## Step 4: Conclusion\nIn conclusion, based on the provided cases, the difference between murder and manslaughter appears to lie in the level of intent and culpability. However, the cases do not provide a clear and comprehensive definition of the distinction between the two offenses. Further research and analysis of relevant statutes and case law would be necessary to provide a more definitive answer. As stated in Case 1, \"No one can be criminally punished in this country, except according to a law prescribed for his government by the sovereign authority before the imputed offense was committed, and which existed as a law at the time\" (Kring v. Missouri (1882) 107 U.S. 221, 235 [27 L.Ed. 506, 511, 2 S.Ct. 443]), highlighting the importance of relying on established laws and precedents in determining the distinction between murder and manslaughter.",
+        "num_cases_retrieved": 3,
+        "quality": {
+          "word_count": 315,
+          "sentence_count": 20,
+          "avg_sentence_length": 15.0,
+          "has_legal_terms": true
+        },
+        "irac_structure": {
+          "sections_found": {
+            "issue": true,
+            "rule": true,
+            "application": true,
+            "conclusion": true
+          },
+          "sections_present": 4,
+          "compliance_score": 1.0,
+          "has_full_structure": true
+        },
+        "citations": {
+          "total_citations": 2,
+          "valid_citations": 2,
+          "citation_accuracy": 1.0,
+          "hallucination_rate": 0.0,
+          "cited_case_ids": [
+            1,
+            2
+          ]
+        },
+        "timestamp": "2026-04-03T00:35:10.018238"
+      }
+    },
+    {
+      "query": "What are Miranda rights?",
+      "baseline": {
+        "mode": "baseline",
+        "query": "What are Miranda rights?",
+        "response": "Miranda rights, also known as the Miranda warning, are a set of rights that must be read to a person who is being taken into custody by law enforcement in the United States. These rights are designed to protect the individual's Fifth Amendment right against self-incrimination and their Sixth Amendment right to an attorney.\n\nThe typical Miranda warning is as follows:\n\n1. \"You have the right to remain silent.\"\n2. \"Anything you say can and will be used against you in a court of law.\"\n3. \"You have the right to an attorney.\"\n4. \"If you cannot afford an attorney, one will be appointed to you.\"\n5. \"Do you understand these rights as they have been read to you?\"\n\nThe purpose of Miranda rights is to ensure that the individual being questioned is aware of their rights and understands that they do not have to answer any questions without an attorney present. If the individual chooses to waive their Miranda rights, they must do so voluntarily and knowingly.\n\nIt's worth noting that Miranda rights only apply in situations where a person is in custody, meaning they are being detained or arrested by law enforcement. If a person is not in custody, they are not entitled to Miranda warnings, and anything they say can still be used as evidence.\n\nThe Miranda rights were established by the landmark Supreme Court case Miranda v. Arizona (1966), which held that statements made by a defendant during a custodial interrogation are admissible as evidence only if the defendant has been informed of their rights and has knowingly waived them.",
+        "quality": {
+          "word_count": 264,
+          "sentence_count": 18,
+          "avg_sentence_length": 13.894736842105264,
+          "has_legal_terms": true
+        },
+        "irac_structure": {
+          "sections_found": {
+            "issue": true,
+            "rule": true,
+            "application": true,
+            "conclusion": false
+          },
+          "sections_present": 3,
+          "compliance_score": 0.75,
+          "has_full_structure": false
+        },
+        "timestamp": "2026-04-03T00:35:17.334392"
+      },
+      "irac_only": {
+        "mode": "irac_only",
+        "query": "What are Miranda rights?",
+        "response": "1. **Issue**: The legal question is what constitutes Miranda rights and their significance in the context of law enforcement interactions with individuals.\n\n2. **Rule**: Miranda rights are rooted in the Fifth Amendment of the United States Constitution, which protects individuals from self-incrimination. The specific legal principle was established by the landmark Supreme Court case Miranda v. Arizona (1966). According to this ruling, law enforcement must inform individuals of their rights before proceeding with a custodial interrogation. These rights include:\n   - The right to remain silent\n   - The right to know that anything said can and will be used against them in a court of law\n   - The right to an attorney\n   - The right to have an attorney appointed if they cannot afford one\n   - The right to stop the interrogation at any time\n\n3. **Application**: Applying the rule to the question, Miranda rights are a set of warnings that law enforcement must provide to individuals who are in custody and about to be questioned. The purpose of these warnings is to ensure that individuals are aware of their constitutional rights, particularly the right against self-incrimination. If law enforcement fails to provide these warnings, or if an individual invokes their right to remain silent or requests an attorney, the interrogation must cease, and any statements made without the warnings may be deemed inadmissible in court.\n\n4. **Conclusion**: In conclusion, Miranda rights are a crucial component of the legal process in the United States, designed to protect individuals from coercive police tactics and ensure that their Fifth Amendment rights are respected. Law enforcement must adhere to the Miranda v. Arizona ruling by providing clear and concise warnings to individuals in custody before conducting an interrogation, thereby safeguarding the integrity of the legal process and the rights of the accused.",
+        "quality": {
+          "word_count": 298,
+          "sentence_count": 15,
+          "avg_sentence_length": 18.625,
+          "has_legal_terms": true
+        },
+        "irac_structure": {
+          "sections_found": {
+            "issue": true,
+            "rule": true,
+            "application": true,
+            "conclusion": true
+          },
+          "sections_present": 4,
+          "compliance_score": 1.0,
+          "has_full_structure": true
+        },
+        "timestamp": "2026-04-03T00:35:17.334440"
+      },
+      "rag": {
+        "mode": "rag",
+        "query": "What are Miranda rights?",
+        "response": "## Issue\nThe legal question presented is: What are Miranda rights?\n\n## Rule\nMiranda rights are rooted in the Fifth Amendment of the United States Constitution, which protects individuals from self-incrimination. As established in Miranda v. Arizona (1966) 384 U.S. 436, these rights are designed to ensure that individuals who are taken into custody are aware of their constitutional rights, including the right to remain silent and the right to an attorney. According to the provided cases, specifically Case 1, evidence seized in violation of Miranda rights may be subject to suppression.\n\n## Application\nApplying the rule to the question, Miranda rights are a set of warnings that law enforcement must provide to individuals who are in custody and subject to interrogation. These warnings typically include: (1) the right to remain silent, (2) the warning that anything said can and will be used against the individual in court, (3) the right to an attorney, and (4) the warning that if the individual cannot afford an attorney, one will be appointed. The purpose of these warnings is to protect the individual's Fifth Amendment rights and to ensure that any statements made are voluntary and made with full knowledge of the consequences.\n\n## Conclusion\nIn conclusion, Miranda rights are a fundamental aspect of the United States Constitution, designed to protect individuals from self-incrimination and ensure that they are aware of their rights when in custody and subject to interrogation. As seen in Case 1, the violation of these rights can result in the suppression of evidence, highlighting the importance of adhering to these constitutional protections.",
+        "num_cases_retrieved": 3,
+        "quality": {
+          "word_count": 263,
+          "sentence_count": 12,
+          "avg_sentence_length": 20.23076923076923,
+          "has_legal_terms": true
+        },
+        "irac_structure": {
+          "sections_found": {
+            "issue": true,
+            "rule": true,
+            "application": true,
+            "conclusion": true
+          },
+          "sections_present": 4,
+          "compliance_score": 1.0,
+          "has_full_structure": true
+        },
+        "citations": {
+          "total_citations": 2,
+          "valid_citations": 1,
+          "citation_accuracy": 0.5,
+          "hallucination_rate": 0.5,
+          "cited_case_ids": [
+            1
+          ]
+        },
+        "timestamp": "2026-04-03T00:35:17.334493"
+      }
+    },
+    {
+      "query": "When does double jeopardy apply?",
+      "baseline": {
+        "mode": "baseline",
+        "query": "When does double jeopardy apply?",
+        "response": "Double jeopardy is a constitutional protection that applies in certain situations to prevent a person from being tried twice for the same offense. In the United States, the Fifth Amendment to the Constitution provides that \"nor shall any person be subject for the same offence to be twice put in jeopardy of life or limb.\"\n\nDouble jeopardy applies when:\n\n1. **A person has been acquitted**: If a person is found not guilty of a crime, they cannot be retried for the same offense.\n2. **A person has been convicted**: If a person is found guilty of a crime, they cannot be retried for the same offense, even if new evidence is discovered.\n3. **A mistrial has been declared**: If a trial is terminated due to a hung jury or other reasons, and the prosecution intends to retry the case, double jeopardy may apply. However, if the mistrial is declared at the defendant's request, or if the prosecution can show that the mistrial was necessary due to circumstances beyond their control, double jeopardy may not apply.\n4. **A person has been punished for the same offense**: If a person has already been punished for a crime, they cannot be punished again for the same offense.\n\nTo determine whether double jeopardy applies, the following factors are considered:\n\n* **Same offense**: The prosecution must be for the same offense, or an offense that is essentially the same (e.g., same act, same victim, same time and place).\n* **Same jurisdiction**: Double jeopardy only applies within the same jurisdiction (e.g., state or federal court).\n* **Prosecutorial intent**: The prosecution must intend to retry the defendant for the same offense.\n\nIt's worth noting that there are some exceptions and nuances to the double jeopardy rule, such as:\n\n* **Appeals**: If a defendant is convicted and appeals the conviction, the prosecution can retry the case if the appeal is successful.\n* **Multiple offenses**: If a person is charged with multiple offenses arising from the same incident, double jeopardy may not apply to each offense individually.\n* **Civil vs. criminal proceedings**: Double jeopardy only applies to criminal proceedings, not civil proceedings.\n\nIf you have a specific situation or question about double jeopardy, I'd be happy to try to provide more guidance.",
+        "quality": {
+          "word_count": 373,
+          "sentence_count": 23,
+          "avg_sentence_length": 15.541666666666666,
+          "has_legal_terms": true
+        },
+        "irac_structure": {
+          "sections_found": {
+            "issue": true,
+            "rule": true,
+            "application": true,
+            "conclusion": false
+          },
+          "sections_present": 3,
+          "compliance_score": 0.75,
+          "has_full_structure": false
+        },
+        "timestamp": "2026-04-03T00:35:31.267840"
+      },
+      "irac_only": {
+        "mode": "irac_only",
+        "query": "When does double jeopardy apply?",
+        "response": "1. **Issue**: The legal question is: Under what circumstances does the double jeopardy clause apply, protecting a defendant from being tried twice for the same offense?\n\n2. **Rule**: The double jeopardy clause, as stated in the Fifth Amendment of the United States Constitution, provides that no person shall \"be subject for the same offence to be twice put in jeopardy of life or limb.\" The legal principles relevant to this issue include:\n   - The clause applies to proceedings that are considered \"criminal\" in nature, as opposed to civil proceedings.\n   - It protects against a second prosecution for the same offense after a conviction or an acquittal.\n   - The key elements in determining whether two offenses are the \"same\" for double jeopardy purposes involve the \"same evidence\" test or the \"Blockburger\" test, which looks at whether each provision requires proof of a fact that the other does not.\n\n3. **Application**: Applying these rules, double jeopardy would apply in the following scenarios:\n   - If a defendant is tried and acquitted of a crime, they cannot be retried for the same crime.\n   - If a defendant is tried and convicted of a crime, they cannot be retried for the same crime.\n   - However, if the first trial ends in a mistrial due to a \"manifest necessity\" (such as a hung jury), double jeopardy may not bar a retrial, depending on the circumstances.\n   - In cases where multiple offenses are charged, if the offenses are considered the \"same\" under the Blockburger test, prosecuting a defendant for more than one of these offenses could violate double jeopardy.\n\n4. **Conclusion**: Double jeopardy applies when a defendant has been previously tried and either convicted or acquitted of the same offense, or when the prosecution attempts to try a defendant for multiple offenses that are considered the same under the applicable legal tests. It is a constitutional protection designed to prevent the government from repeatedly prosecuting an individual for the same crime, thereby protecting the defendant's rights and ensuring the finality of judgments. However, the specifics of its application can depend on the nuances of the case and the jurisdiction in which it is heard.",
+        "quality": {
+          "word_count": 357,
+          "sentence_count": 16,
+          "avg_sentence_length": 21.0,
+          "has_legal_terms": true
+        },
+        "irac_structure": {
+          "sections_found": {
+            "issue": true,
+            "rule": true,
+            "application": true,
+            "conclusion": true
+          },
+          "sections_present": 4,
+          "compliance_score": 1.0,
+          "has_full_structure": true
+        },
+        "timestamp": "2026-04-03T00:35:31.267925"
+      },
+      "rag": {
+        "mode": "rag",
+        "query": "When does double jeopardy apply?",
+        "response": "## Step 1: Issue\nThe legal question at hand is when double jeopardy applies. Double jeopardy is a constitutional right that protects individuals from being tried twice for the same offense. The issue is to determine the specific circumstances under which double jeopardy applies.\n\n## Step 2: Rule\nThe rule regarding double jeopardy is rooted in the Fifth Amendment of the U.S. Constitution, which states that no person shall \"be subject for the same offence to be twice put in jeopardy of life or limb.\" However, the provided cases do not directly address the double jeopardy clause. Instead, they touch on related concepts such as the statute of limitations (Case 2), the retroactive application of changes in criminal law (Case 3), and the adequacy of guilty pleas (Case 1). While these cases do not directly answer the question of when double jeopardy applies, they suggest that courts consider the timing and circumstances of legal proceedings in determining the applicability of various legal principles.\n\n## Step 3: Application\nApplying the rules to the question of when double jeopardy applies, we must consider that double jeopardy protection begins when a defendant is put in jeopardy, typically at the start of a trial, and ends when the trial concludes, either in an acquittal, conviction, or dismissal. If a case is dismissed without a verdict, double jeopardy may not attach, depending on the circumstances of the dismissal. However, the provided cases do not offer specific guidance on the application of double jeopardy. Case 1 discusses the adequacy of a guilty plea and its implications for subsequent legal proceedings, which might imply that an inadequate plea could potentially lead to a situation where double jeopardy concerns arise if the defendant is later retried for the same offense. Case 2 deals with the statute of limitations, which is a separate concept from double jeopardy, although both can affect when a prosecution can occur. Case 3 addresses the retroactive application of changes in criminal law, which could have implications for double jeopardy if changes in the law affect the definition or elements of a crime.\n\n## Step 4: Conclusion\nIn conclusion, while the provided cases do not directly address the question of when double jeopardy applies, they suggest that the timing and circumstances of legal proceedings are crucial in determining the applicability of various legal principles. Double jeopardy applies when a defendant is put in jeopardy for the same offense twice, which typically occurs when a defendant is retried for an offense after having been previously acquitted or convicted of the same offense. However, the specific circumstances under which double jeopardy attaches can depend on the adequacy of the initial proceeding, as hinted at in Case 1, and the application of legal principles over time, as discussed in Cases 2 and 3. For a definitive answer, one would need to consult legal precedents that directly address the double jeopardy clause, such as relevant Supreme Court decisions.",
+        "num_cases_retrieved": 3,
+        "quality": {
+          "word_count": 489,
+          "sentence_count": 19,
+          "avg_sentence_length": 24.45,
+          "has_legal_terms": true
+        },
+        "irac_structure": {
+          "sections_found": {
+            "issue": true,
+            "rule": true,
+            "application": true,
+            "conclusion": true
+          },
+          "sections_present": 4,
+          "compliance_score": 1.0,
+          "has_full_structure": true
+        },
+        "citations": {
+          "total_citations": 7,
+          "valid_citations": 3,
+          "citation_accuracy": 0.42857142857142855,
+          "hallucination_rate": 0.5714285714285714,
+          "cited_case_ids": [
+            1,
+            2,
+            3
+          ]
+        },
+        "timestamp": "2026-04-03T00:35:31.268019"
+      }
+    },
+    {
+      "query": "What is the reasonable person standard?",
+      "baseline": {
+        "mode": "baseline",
+        "query": "What is the reasonable person standard?",
+        "response": "The reasonable person standard is a legal principle used in many areas of law, particularly in tort law (personal injury law) and negligence cases. It is a hypothetical standard that serves as a benchmark to determine whether a person's actions or behavior were reasonable under the circumstances.\n\nThe reasonable person standard is often defined as a person who exercises the degree of care that a reasonably prudent person would exercise in a similar situation. This standard takes into account the circumstances and context of the situation, including any relevant factors such as the person's knowledge, experience, and the potential risks involved.\n\nIn applying the reasonable person standard, the court will consider whether a reasonable person, faced with the same circumstances, would have acted in the same way as the defendant. If the defendant's actions fell short of what a reasonable person would have done, they may be found liable for any resulting harm or damages.\n\nThe key elements of the reasonable person standard include:\n\n1. **Objective reasonableness**: The standard is based on an objective assessment of what a reasonable person would do, rather than the defendant's subjective intentions or beliefs.\n2. **Ordinary care**: The standard requires the exercise of ordinary care, which is the level of care that a reasonably prudent person would exercise in similar circumstances.\n3. **Circumstance-specific**: The standard takes into account the specific circumstances of the case, including any relevant factors that may have affected the defendant's actions.\n\nThe reasonable person standard is used in various areas of law, including:\n\n1. **Negligence**: To determine whether a person's actions were negligent and caused harm to another person.\n2. **Tort law**: To determine liability for personal injuries or property damage.\n3. **Contract law**: To determine whether a person's actions were reasonable in the context of a contractual agreement.\n\nIt's worth noting that the reasonable person standard can be subjective and may vary depending on the jurisdiction and the specific circumstances of the case. Ultimately, the application of the reasonable person standard will depend on the facts of the case and the interpretation of the law by the court.",
+        "quality": {
+          "word_count": 349,
+          "sentence_count": 20,
+          "avg_sentence_length": 16.61904761904762,
+          "has_legal_terms": true
+        },
+        "irac_structure": {
+          "sections_found": {
+            "issue": false,
+            "rule": true,
+            "application": true,
+            "conclusion": false
+          },
+          "sections_present": 2,
+          "compliance_score": 0.5,
+          "has_full_structure": false
+        },
+        "timestamp": "2026-04-03T00:35:43.637453"
+      },
+      "irac_only": {
+        "mode": "irac_only",
+        "query": "What is the reasonable person standard?",
+        "response": "1. **Issue**: The legal question is: What is the reasonable person standard, and how is it applied in legal contexts?\n\n2. **Rule**: The reasonable person standard is a legal principle that originated in tort law, particularly in negligence cases. It is a hypothetical person who is reasonably prudent, cautious, and wise. The standard is often defined as an ordinary, prudent person exercising due care under similar circumstances. This standard is used to determine whether a defendant's actions were reasonable and thus not negligent. The rule is often stated as: \"A person is negligent if they fail to act as a reasonably prudent person would have acted under the same or similar circumstances.\"\n\n3. **Application**: In applying the reasonable person standard, courts consider various factors, including the foreseeability of harm, the severity of the potential harm, and the burden of taking precautions to prevent harm. The standard is objective, meaning it is based on how a reasonable person would act, rather than the defendant's subjective intentions or beliefs. For example, in a slip-and-fall case, the court might ask whether a reasonable store owner would have taken steps to clean up a spill or warn customers about a slippery floor. If the answer is yes, and the defendant failed to do so, they may be found negligent.\n\n4. **Conclusion**: In conclusion, the reasonable person standard is a fundamental principle in tort law that provides a benchmark for determining negligence. It is an objective standard that considers how a prudent and cautious person would act under similar circumstances. By applying this standard, courts can assess whether a defendant's actions were reasonable and thus determine liability in negligence cases. While the specific application of the standard may vary depending on the jurisdiction and the facts of the case, the underlying principle remains a cornerstone of tort law.",
+        "quality": {
+          "word_count": 303,
+          "sentence_count": 18,
+          "avg_sentence_length": 15.947368421052632,
+          "has_legal_terms": true
+        },
+        "irac_structure": {
+          "sections_found": {
+            "issue": true,
+            "rule": true,
+            "application": true,
+            "conclusion": true
+          },
+          "sections_present": 4,
+          "compliance_score": 1.0,
+          "has_full_structure": true
+        },
+        "timestamp": "2026-04-03T00:35:43.637493"
+      },
+      "rag": {
+        "mode": "rag",
+        "query": "What is the reasonable person standard?",
+        "response": "## Step 1: Issue\nThe legal question presented is: What is the reasonable person standard?\n\n## Step 2: Rule\nThe reasonable person standard is a legal principle that is not explicitly defined in the provided cases. However, we can look to general legal principles to understand this concept. The reasonable person standard is a test used to determine whether a person's actions or behavior were reasonable under the circumstances. This standard is often used in tort law, particularly in negligence cases, to determine whether a defendant's actions were reasonable and whether they breached their duty of care to the plaintiff.\n\n## Step 3: Application\nAlthough the provided cases do not directly address the reasonable person standard, we can apply general legal principles to understand this concept. The reasonable person standard is an objective test that considers how a reasonable person would act in a given situation. It takes into account the circumstances and the knowledge that a reasonable person would have at the time. In applying this standard, courts consider whether the defendant's actions were those of a reasonably prudent person under similar circumstances.\n\n## Step 4: Conclusion\nIn conclusion, the reasonable person standard is a legal principle that is used to determine whether a person's actions or behavior were reasonable under the circumstances. While the provided cases do not explicitly define this standard, general legal principles provide guidance on its application. The standard is an objective test that considers how a reasonable person would act in a given situation, taking into account the circumstances and the knowledge that a reasonable person would have at the time. As stated in Case 1, \"No one can be criminally punished in this country, except according to a law prescribed for his government by the sovereign authority before the imputed offense was committed, and which existed as a law at the time\" (Kring v. Missouri (1882) 107 U.S. 221, 235 [27 L.Ed. 506, 511, 2 S.Ct. 443]), which implies that the reasonable person standard is rooted in the principle of due process and the idea that individuals should be held to a standard of reasonableness in their actions. However, it is essential to note that the provided cases do not fully address the question, and a more comprehensive analysis would require additional legal precedents.",
+        "num_cases_retrieved": 3,
+        "quality": {
+          "word_count": 381,
+          "sentence_count": 21,
+          "avg_sentence_length": 17.318181818181817,
+          "has_legal_terms": true
+        },
+        "irac_structure": {
+          "sections_found": {
+            "issue": true,
+            "rule": true,
+            "application": true,
+            "conclusion": true
+          },
+          "sections_present": 4,
+          "compliance_score": 1.0,
+          "has_full_structure": true
+        },
+        "citations": {
+          "total_citations": 1,
+          "valid_citations": 1,
+          "citation_accuracy": 1.0,
+          "hallucination_rate": 0.0,
+          "cited_case_ids": [
+            1
+          ]
+        },
+        "timestamp": "2026-04-03T00:35:43.637558"
+      }
+    }
+  ],
+  "evaluation_date": "2026-04-03T00:35:43.637704",
+  "num_queries": 8
+}
