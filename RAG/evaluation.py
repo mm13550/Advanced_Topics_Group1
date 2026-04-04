@@ -279,15 +279,54 @@ def run_default_evaluation():
     """Run evaluation with default test queries."""
     
     test_queries = [
-        "What is probable cause for a search warrant?",
-        "What are the elements of negligence in tort law?",
-        "When can a landlord evict a tenant without notice?",
-        "What constitutes a valid contract?",
-        "What is the difference between murder and manslaughter?",
-        "What are Miranda rights?",
-        "When does double jeopardy apply?",
-        "What is the reasonable person standard?"
+       "What year was Brown v. Board of Education decided?",
+       "What court decided Roe v. Wade?",
+       "What was the final judgment in Miranda v. Arizona?",
+       "What legal issue was at stake in Marbury v. Madison?",
+       "Who wrote the majority opinion in Brown v. Board of Education?",
+       "Who were the parties in Plessy v. Ferguson?",
+       "Which judge authored the dissent in Korematsu v. United States?",
+       "What test was established in Lemon v. Kurtzman?",
+       "What standard of review was applied in New York Times v. Sullivan?",
+       "What rule did Mapp v. Ohio establish regarding evidence?",
+
+
+       "Find cases involving freedom of speech decided after 2000.",
+       "Find Supreme Court cases involving search and seizure under the Fourth Amendment.",
+       "Find cases where the defendant was a corporation and the issue involved antitrust law.",
+       "Compare the holdings of Plessy v. Ferguson and Brown v. Board of Education.",
+       "Compare how Roe v. Wade and Dobbs v. Jackson interpret the right to privacy.",
+       "Compare majority and dissenting opinions in Korematsu v. United States.",
+       "Which cases involve both First Amendment rights and public schools?",
+       "Find cases involving discrimination and equal protection where the plaintiff won.",
+       "Which cases involve police searches and resulted in evidence being excluded?",
+       "Find cases involving contracts where damages were awarded for breach.",
+
+
+       "Summarize the holding of Marbury v. Madison.",
+       "Summarize the legal reasoning in Brown v. Board of Education.",
+       "Summarize the key facts of Miranda v. Arizona.",
+       "Why did the Court rule against segregation in Brown v. Board of Education?",
+       "What led the Court to overturn precedent in Dobbs v. Jackson?",
+       "Why was the evidence excluded in Mapp v. Ohio?",
+       "Can police search my house without a warrant?",
+       "Do I have to answer police questions during an arrest?",
+       "Is segregating students by race legal?",
+       "Can the government restrict what newspapers publish?",
+
+
+       "What is the capital of France?",
+       "Who won the 2020 NBA Finals?",
+       "What is the boiling point of water?",
+       "Tell me about the ruling.",
+       "What did the court decide?",
+       "Explain the case outcome.",
+       "What rights are protected excluding the First Amendment?",
+       "Find cases about free speech excluding political speech.",
+       "What constitutional protections apply excluding search and seizure?",
+       "Find discrimination cases excluding race-based claims.",
     ]
+
     
     evaluator = RAGEvaluator()
     results = evaluator.run_evaluation(test_queries)
