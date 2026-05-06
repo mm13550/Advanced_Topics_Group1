@@ -1,133 +1,185 @@
 # RAG Legal Assistant
 
-Retrieval-Augmented Generation system for legal case analysis using IRAC framework.
+A conversational legal research tool that answers U.S. legal questions strictly from real court opinions — no hallucinated citations, no general knowledge fill-in. Built for Advanced Topics in Data Science (Group 1, NYUAD).
 
-## System Overview
+---
+
+## How It Works (End to End)
 
 ```
-User Question
+Your question
     ↓
-[1] Baseline LLM (no retrieval)
+[1] BGE Embedding  (BAAI/bge-base-en-v1.5, 768-dim)
     ↓
-[2] Chroma Retrieval Pipeline (search case database)
+[2] ChromaDB Vector Search  (cosine similarity, top-20 candidates)
     ↓
-[3] RAG System (retrieval + IRAC generation)
+[3] Cross-Encoder Reranking  (ms-marco-MiniLM-L-6-v2, top-k results)
     ↓
-[4] Gradio Web Interface / Evaluation
+[4] IRAC Prompt + Llama 3.3 70B via Groq
+    (must quote verbatim from retrieved text, no speculation)
+    ↓
+[5] Conversational response  (full chat history passed each turn)
 ```
 
-## Files
+**IRAC Framework:** The LLM is forced to structure every answer as:
+- **Issue** — identify the legal question
+- **Rule** — state the legal principle drawn from retrieved cases
+- **Application** — apply it to the question using verbatim quotes
+- **Conclusion** — one direct answer based only on what the cases say
 
-| File | Purpose | Usage |
-|------|---------|-------|
-| `baseline_llm.py` | Simple LLM without retrieval | `python baseline_llm.py test` |
-| `pipeline/retrieval_chroma.py` | ChromaDB retrieval + reranking | used by `RAG/rag_system.py` |
-| `pipeline/smoke_test.py` | Validate the Chroma database and semantic retrieval | `python -m pipeline.smoke_test --week 2` |
-| `RAG/rag_system.py` | Full RAG with IRAC prompting | `python -m RAG.rag_system compare` |
-| `RAG/web_interface.py` | Gradio web interface | `python -m RAG.web_interface` |
-| `evaluation.py` | Metrics & comparison | `python evaluation.py` |
+If the retrieved documents don't contain a clear answer, the model is required to say so rather than speculate.
 
-## Quick Start
+---
 
-### 1. Install Dependencies
+## Features
+
+| Feature | Detail |
+|---|---|
+| Conversational memory | Full chat history sent to the LLM each turn — follow-up questions work naturally |
+| Speech-to-text | Click the mic, speak, stop — Google Speech Recognition fills the text box |
+| Text-to-speech | Click 🔊 Hear response — generates and plays the answer as audio (Google TTS) |
+| Retrieved Cases panel | Shows which court opinion chunks were used, similarity scores, and the text excerpt the model read |
+| IRAC enforcement | System prompt requires structured legal reasoning with verbatim citations |
+| Relevance threshold | Cases with similarity < 0.60 are flagged with a warning |
+
+---
+
+## Project Structure
+
+```
+.
+├── RAG/
+│   ├── rag_system.py          # Core RAG engine (retrieval + IRAC generation)
+│   ├── baseline_llm.py        # Baseline LLM without retrieval (for comparison)
+│   ├── web_interface.py       # Gradio chat interface
+│   ├── evaluation.py          # Evaluation metrics & benchmarking
+│   └── retrieval.py           # Legacy FAISS retrieval (superseded by ChromaDB)
+├── pipeline/
+│   ├── retrieval_chroma.py    # ChromaDB retrieval + cross-encoder reranking
+│   ├── build_index.py         # Build ChromaDB index from corpus
+│   ├── compute_embeddings.py  # Generate BGE embeddings
+│   ├── process_corpus.py      # Preprocess raw case data
+│   └── smoke_test.py          # Validate retrieval pipeline
+├── configs/
+│   └── config.yaml            # Embedding model + pipeline settings
+├── data/                      # ChromaDB index lives here (not in git — download separately)
+├── download_db.py             # Downloads ChromaDB from HuggingFace (~1.6 GB)
+├── requirements.txt
+└── .env                       # Your API keys (never commit this)
+```
+
+---
+
+## Running Locally
+
+### 1. Clone the repo
+
+```bash
+git clone https://github.com/mm13550/Advanced_Topics_Group1.git
+cd Advanced_Topics_Group1
+```
+
+### 2. Create and activate a virtual environment
+
+```bash
+python -m venv venv
+
+# Windows:
+venv\Scripts\activate
+
+# Mac/Linux:
+source venv/bin/activate
+```
+
+### 3. Install dependencies
+
 ```bash
 pip install -r requirements.txt
+pip install SpeechRecognition gTTS
 ```
 
-### 2. Setup Environment
-Create `.env` file:
+> If you get a `click` version conflict after installing gTTS, run:
+> `pip install "click>=8.2.1"`
+
+### 4. Set up your API keys
+
+Create a file called `.env` in the project root:
+
 ```
-GROQ_API_KEY=your_api_key_here
+GROQ_API_KEY=your_groq_key_here
 ```
 
-### 3. Build Vector Database
+- **Groq API key** (free): [console.groq.com](https://console.groq.com) → API Keys → Create
+- Each team member needs their own key — the free tier is sufficient
+- No HuggingFace account or token needed — the ChromaDB dataset is public
+- No LangSmith key needed — it is not used by this project
+
+### 5. Download the ChromaDB index
+
 ```bash
 python download_db.py
 ```
-Downloads and extracts the Chroma database into `data/chroma_db/`.
 
-### 4. Test Components
+This downloads ~1.6 GB from HuggingFace and extracts it to `data/chroma_db/`. Takes a few minutes depending on your connection. Only needs to be done once.
 
-**Baseline LLM:**
+### 6. Launch the app
+
 ```bash
-python baseline_llm.py test
+python RAG/web_interface.py
 ```
 
-**Retrieval smoke test:**
+Open **http://127.0.0.1:7860** in your browser.
+
+---
+
+## Using the Interface
+
+- **Ask a question** — type in the box and press Enter or click the orange ↑ button
+- **Voice input** — click the microphone, speak your question, stop recording. The transcript appears in the text box for review before you send.
+- **Hear the response** — click **🔊 Hear response** after any answer to hear it read aloud
+- **Retrieved Cases** — expand the accordion at the bottom to see which court opinions were used, their similarity scores (sorted highest → lowest), and the text chunk the model read
+- **Settings** (collapsed by default):
+  - *Cases to Retrieve* (1–5): how many reranked opinion chunks are fed to the LLM
+  - *Creativity (Temperature)*: keep low (0.2–0.4) for legal research; higher = more varied phrasing
+- **Clear conversation** — resets the full chat history and audio player
+
+---
+
+## Tech Stack
+
+| Component | Tool |
+|---|---|
+| LLM | Llama 3.3 70B Versatile (Groq API) |
+| Embeddings | BAAI/bge-base-en-v1.5 (768-dim) |
+| Vector store | ChromaDB (persistent, cosine distance) |
+| Reranker | cross-encoder/ms-marco-MiniLM-L-6-v2 |
+| Web interface | Gradio 6 |
+| Speech-to-text | Google Speech Recognition (via SpeechRecognition) |
+| Text-to-speech | Google TTS (gTTS) |
+| Dataset | Caselaw Access Project — 2M+ U.S. court opinions; 1,349 chunks indexed |
+
+---
+
+## Evaluation
+
 ```bash
-python -m pipeline.smoke_test --week 2
+python RAG/evaluation.py
 ```
 
-**RAG System:**
-```bash
-python -m RAG.rag_system compare
-```
+Metrics tracked:
+- **IRAC Compliance** — presence of Issue / Rule / Application / Conclusion sections
+- **Citation Accuracy** — valid case references drawn from the retrieved set
+- **Hallucination Rate** — citations that don't appear in retrieved documents
+- **Response Quality** — word count, legal terminology density
 
-### 5. Launch Web Interface
-```bash
-python -m RAG.web_interface
-```
-Opens at http://127.0.0.1:7860
+Results saved to `RAG/evaluation_results.json`.
 
-### 6. Run Evaluation
-```bash
-python evaluation.py
-```
-Generates `evaluation_results.json`
-
-
-## Architecture
-
-**Vector Database:**
-- 768-dimensional BGE embeddings
-- ChromaDB cosine similarity search with cross-encoder reranking
-- Caselaw Access Project dataset
-
-**Retrieval:**
-- Query → embedding (BGE-base-en-v1.5)
-- Search top-k similar cases
-- Truncate to 1000 chars/case
-
-**Generation:**
-- Model: Llama 3.3 70B (Groq API)
-- IRAC framework prompting
-- Temperature: 0.3 (default)
-- Max tokens: 800
-
-## Evaluation Metrics
-
-- **IRAC Compliance**: Presence of Issue/Rule/Application/Conclusion
-- **Citation Accuracy**: Valid case references from retrieved set
-- **Response Quality**: Word count, legal terminology usage
-- **Hallucination Rate**: Invalid citations
-
-## Example Workflow
-
-```python
-from rag_system import RAGSystem
-
-rag = RAGSystem()
-
-result = rag.generate_response(
-    "What constitutes probable cause?",
-    mode="rag",
-    top_k=5
-)
-
-print(result["response"])
-print(f"Retrieved {result['num_cases_retrieved']} cases")
-```
-
-## Dataset
-
-**Source:** [Caselaw Access Project](https://huggingface.co/datasets/free-law/Caselaw_Access_Project_embeddings)
-- 2M+ U.S. court opinions
-- Federal and state jurisdictions
-- 768-D BGE embeddings (first 512 tokens)
+---
 
 ## Team
 
-Advanced Topics in Data Science - Group 1
-- Merry Ma (mm13550@nyu.edu)
-- Salma Mansour (sim8654@nyu.edu)
-- Hanwen Zhang (hz3177@nyu.edu)
+Advanced Topics in Data Science — Group 1, NYUAD Spring 2025
+
+- Merry Ma — mm13550@nyu.edu
+- Salma Mansour — sim8654@nyu.edu
+- Hanwen Zhang — hz3177@nyu.edu
