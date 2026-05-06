@@ -45,12 +45,41 @@ def build_index(config: dict) -> None:
     # Stream precomputed embeddings dataset of768-dim BGE vectors, pre-normalized
     print(f"\nStreaming: {config['datasets']['cap_embeddings_repo']}")
 
-    emb_ds = load_dataset(
-        config["datasets"]["cap_embeddings_repo"],
-        split=config["datasets"]["hf_split"],
-        streaming=True,
-        token=config["secrets"]["HF_TOKEN"]
-    )
+    try:
+        emb_ds = load_dataset(
+            config["datasets"]["cap_embeddings_repo"],
+            split=config["datasets"]["hf_split"],
+            streaming=True,
+            token=config["secrets"]["HF_TOKEN"]
+        )
+    except Exception as e:
+        # Fallback: download the dataset snapshot locally and stream from local files
+        print(f"Streaming failed ({e}). Falling back to local snapshot download...")
+        from huggingface_hub import snapshot_download
+        import glob
+
+        local_dir = Path("data/embeddings_cache")
+        local_dir.mkdir(parents=True, exist_ok=True)
+
+        repo_id = config["datasets"]["cap_embeddings_repo"]
+        print(f"Downloading dataset snapshot to {local_dir}/ (may take a while)...")
+        snapshot_path = snapshot_download(repo_id=repo_id, repo_type="dataset", local_dir=str(local_dir), token=config["secrets"]["HF_TOKEN"])
+
+        # Find parquet/arrow files in the snapshot
+        candidates = []
+        for ext in ("*.parquet", "*.arrow", "*.parquet.gz"):
+            candidates.extend(glob.glob(str(Path(snapshot_path) / "**" / ext), recursive=True))
+
+        if not candidates:
+            raise RuntimeError(f"No parquet/arrow files found in snapshot at {snapshot_path}")
+
+        print(f"Found {len(candidates)} local data file(s); streaming from disk")
+        emb_ds = load_dataset(
+            "parquet",
+            data_files=candidates,
+            split=config["datasets"]["hf_split"],
+            streaming=True
+        )
 
     # Inject embeddings in batches
     BATCH_SIZE = 500
@@ -116,4 +145,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     cfg = load_config(args.config)
-    build_index(cfg, dry_run=args.dry_run)
+    build_index(cfg)

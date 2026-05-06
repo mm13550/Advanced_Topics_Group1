@@ -11,10 +11,13 @@ Uses a two-stage retrieval design:
 """
 
 import os
+import re
+from pathlib import Path
 import torch
 import numpy as np
 from typing import List, Dict, Tuple, Optional
 
+import yaml
 from sentence_transformers import SentenceTransformer, CrossEncoder
 import chromadb
 from chromadb.config import Settings
@@ -32,7 +35,8 @@ class ChromaDBRetrievalPipeline:
         vector_db_path: str = "data/chroma_db",
         collection_name: str = "legal_cases",
         use_reranker: bool = True,
-        reranker_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+        reranker_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2",
+        config_path: str = "configs/config.yaml"
     ):
         """
         Initializes ChromaDB retrieval pipeline
@@ -42,17 +46,26 @@ class ChromaDBRetrievalPipeline:
             collection_name:  ChromaDB collection name
             use_reranker:     Applies cross-encoder reranking
             reranker_model:   HuggingFace model ID for cross-encoder
+            config_path:      Path to project config for embedding model settings
         """
         print("Starting ChromaDB retrieval pipeline:")
 
         # Load embedding model
-        from pipeline.config_loader import load_config
-        config = load_config()
+        config = {}
+        config_file = Path(config_path)
+        if config_file.exists():
+            with open(config_file, "r", encoding="utf-8") as handle:
+                config = yaml.safe_load(handle) or {}
+
+        embedding_model_name = config.get("embeddings", {}).get(
+            "model",
+            "BAAI/bge-base-en-v1.5"
+        )
         self.embedding_model = SentenceTransformer(
-            config["embeddings"]["model"],
+            embedding_model_name,
             device="cuda" if torch.cuda.is_available() else "cpu"
         )
-        print("Loaded embedding model")
+        print(f"Loaded embedding model: {embedding_model_name}")
 
 
         # Connect to ChromaDB
@@ -128,7 +141,7 @@ class ChromaDBRetrievalPipeline:
             query: User's legal question
             top_k: Number of final results to return
             min_similarity: Minimum step 1 cosine similarity, defaults to 0.0/no filter.
-                        EDA found ≥ 0.82 indicates genuine semantic relevance
+                        EDA found ≥ 0.60 indicates genuine semantic relevance
             stage1_candidates: Number of candidates to retrieve in step 1
                         before reranking. Should be > top_k.
                         Ignored if use_reranker=False
@@ -143,7 +156,7 @@ class ChromaDBRetrievalPipeline:
               case_name: extracted case name
               court: court name
               year: decision year
-              below_floor: True if similarity < 0.82
+              below_floor: True if similarity < 0.60
         """
         # ChromaDB vector search
         query_embedding = self.embed_query(query)
@@ -178,11 +191,50 @@ class ChromaDBRetrievalPipeline:
         metadatas = results["metadatas"][0]
         distances = results["distances"][0]
 
+        query_terms = {
+            term
+            for term in re.findall(r"[a-zA-Z][a-zA-Z']+", query.lower())
+            if len(term) > 3
+        }
+
+        def pick_relevance_quote(text: str) -> str:
+            sentences = re.split(r"(?<=[.!?])\s+", text.strip())
+            if not sentences:
+                return text[:240]
+
+            best_sentence = sentences[0]
+            best_score = -1
+
+            for sentence in sentences:
+                sentence_terms = set(
+                    term
+                    for term in re.findall(r"[a-zA-Z][a-zA-Z']+", sentence.lower())
+                    if len(term) > 3
+                )
+                overlap = len(sentence_terms & query_terms)
+                if overlap > best_score:
+                    best_score = overlap
+                    best_sentence = sentence
+
+            cleaned = " ".join(best_sentence.split())
+            if len(cleaned) > 280:
+                cleaned = cleaned[:277] + "..."
+            return cleaned
+
+        def build_citation(meta: Dict) -> str:
+            parts = [meta.get("case_name", "Unknown case")]
+            if meta.get("court"):
+                parts.append(meta["court"])
+            if meta.get("year"):
+                parts.append(str(meta["year"]))
+            return ", ".join(parts)
+
         stage1_results = []
         for doc, meta, dist in zip(documents, metadatas, distances):
             similarity = float(1.0 - dist)
             if similarity < min_similarity:
                 continue
+            citation = build_citation(meta)
             stage1_results.append({
                 "text": doc,
                 "preview": doc[:500],
@@ -192,7 +244,9 @@ class ChromaDBRetrievalPipeline:
                 "case_name": meta.get("case_name", "Unknown"),
                 "court": meta.get("court", ""),
                 "year": meta.get("year", 0),
-                "below_floor": similarity < 0.82,
+                "citation": citation,
+                "relevance_quote": pick_relevance_quote(doc),
+                "below_floor": similarity < 0.60,
                 "chunk_index": meta.get("chunk_index", 0)
             })
             
@@ -244,21 +298,19 @@ class ChromaDBRetrievalPipeline:
             if len(case["text"]) > max_chars_per_case:
                 case_text += "... [truncated]"
 
-            # Build metadata header
             meta_parts = [f"Case {i} (similarity: {case['similarity']:.3f})"]
             if case.get("rerank_score") is not None:
                 meta_parts.append(f"rerank: {case['rerank_score']:.3f}")
-            if case.get("case_name") and case["case_name"] != "Unknown":
-                meta_parts.append(f"name: {case['case_name']}")
-            if case.get("court"):
-                meta_parts.append(f"court: {case['court']}")
-            if case.get("year"):
-                meta_parts.append(f"year: {case['year']}")
+            meta_parts.append(f"citation: {case.get('citation', case.get('case_name', 'Unknown case'))}")
             if case.get("below_floor"):
                 meta_parts.append("⚠ below relevance threshold")
 
             header = " | ".join(meta_parts)
-            context_parts.append(f"{header}:\n{case_text}\n")
+            context_parts.append(
+                f"{header}\n"
+                f"Relevance quote: {case.get('relevance_quote', case_text[:240])}\n"
+                f"Quoted context:\n{case_text}\n"
+            )
 
         return "\n---\n".join(context_parts)
 

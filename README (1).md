@@ -9,11 +9,11 @@ User Question
     ↓
 [1] Baseline LLM (no retrieval)
     ↓
-[2] Retrieval Pipeline (search case database)
+[2] Chroma Retrieval Pipeline (search case database)
     ↓
 [3] RAG System (retrieval + IRAC generation)
     ↓
-[4] Web Interface / Evaluation
+[4] Gradio Web Interface / Evaluation
 ```
 
 ## Files
@@ -21,17 +21,17 @@ User Question
 | File | Purpose | Usage |
 |------|---------|-------|
 | `baseline_llm.py` | Simple LLM without retrieval | `python baseline_llm.py test` |
-| `vector_db_setup.py` | Load embeddings into FAISS | `python vector_db_setup.py --sample_size 1000` |
-| `retrieval.py` | Query embedding & search | `python retrieval.py test` |
-| `rag_system.py` | Full RAG with IRAC prompting | `python rag_system.py compare` |
-| `web_interface.py` | Gradio web interface | `python web_interface.py` |
+| `pipeline/retrieval_chroma.py` | ChromaDB retrieval + reranking | used by `RAG/rag_system.py` |
+| `pipeline/smoke_test.py` | Validate the Chroma database and semantic retrieval | `python -m pipeline.smoke_test --week 2` |
+| `RAG/rag_system.py` | Full RAG with IRAC prompting | `python -m RAG.rag_system compare` |
+| `RAG/web_interface.py` | Gradio web interface | `python -m RAG.web_interface` |
 | `evaluation.py` | Metrics & comparison | `python evaluation.py` |
 
 ## Quick Start
 
 ### 1. Install Dependencies
 ```bash
-pip install groq python-dotenv faiss-cpu numpy requests sentence-transformers gradio
+pip install -r requirements.txt
 ```
 
 ### 2. Setup Environment
@@ -42,9 +42,9 @@ GROQ_API_KEY=your_api_key_here
 
 ### 3. Build Vector Database
 ```bash
-python vector_db_setup.py --sample_size 5000
+python download_db.py
 ```
-Creates `vector_db.pkl` and `vector_db_index.faiss`
+Downloads and extracts the Chroma database into `data/chroma_db/`.
 
 ### 4. Test Components
 
@@ -53,19 +53,19 @@ Creates `vector_db.pkl` and `vector_db_index.faiss`
 python baseline_llm.py test
 ```
 
-**Retrieval:**
+**Retrieval smoke test:**
 ```bash
-python retrieval.py test
+python -m pipeline.smoke_test --week 2
 ```
 
 **RAG System:**
 ```bash
-python rag_system.py compare
+python -m RAG.rag_system compare
 ```
 
 ### 5. Launch Web Interface
 ```bash
-python web_interface.py
+python -m RAG.web_interface
 ```
 Opens at http://127.0.0.1:7860
 
@@ -80,7 +80,7 @@ Generates `evaluation_results.json`
 
 **Vector Database:**
 - 768-dimensional BGE embeddings
-- FAISS cosine similarity search
+- ChromaDB cosine similarity search with cross-encoder reranking
 - Caselaw Access Project dataset
 
 **Retrieval:**

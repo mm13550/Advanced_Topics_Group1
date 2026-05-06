@@ -33,11 +33,12 @@ class BaseLLM:
         self.conversation_history: List[Dict] = []
     
     def generate_response(
-        self, 
-        query: str, 
+        self,
+        query: str,
         system_prompt: Optional[str] = None,
         max_tokens: int = 512,
-        temperature: float = 0.7
+        temperature: float = 0.7,
+        chat_history: Optional[List[Dict]] = None
     ) -> str:
         """
         Generate response to legal query without retrieval.
@@ -57,10 +58,10 @@ class BaseLLM:
                 "clearly and accurately. Acknowledge uncertainty when appropriate."
             )
         
-        messages = [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": query}
-        ]
+        messages = [{"role": "system", "content": system_prompt}]
+        if chat_history:
+            messages.extend(chat_history)
+        messages.append({"role": "user", "content": query})
         
         try:
             completion = self.client.chat.completions.create(
