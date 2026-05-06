@@ -1,0 +1,28 @@
+SMOKE TEST — Week 2 validation
+
+Collection health
+PASS  Collection has documents  [1,349 chunks]
+PASS  Metadata complete for chunk f2d_474/html/0001-01.html__chunk0  [{'jurisdiction': '', 'year': 1973, 'chunk_index': 0}]
+PASS  Chunk text is non-trivial  [1597 chars]
+PASS  Metadata complete for chunk f2d_474/html/0001-01.html__chunk1  [{'jurisdiction': '', 'year': 1973, 'chunk_index': 1}]
+PASS  Chunk text is non-trivial  [1366 chars]
+PASS  Metadata complete for chunk f2d_474/html/0001-01.html__chunk2  [{'jurisdiction': '', 'year': 1973, 'chunk_index': 2}]
+PASS  Chunk text is non-trivial  [1355 chars]
+PASS  Metadata complete for chunk f2d_474/html/0001-01.html__chunk3  [{'jurisdiction': '', 'year': 1973, 'chunk_index': 3}]
+PASS  Chunk text is non-trivial  [610 chars]
+PASS  Metadata complete for chunk f2d_474/html/0003-01.html__chunk0  [{'jurisdiction': '', 'year': 1973, 'chunk_index': 0}]
+PASS  Chunk text is non-trivial  [1079 chars]
+
+Year extraction
+PASS  Year extraction failure < 20%  [0.0% failed]
+  Year range: 1972 – 1973
+
+Embedding check
+PASS  Query returns relevant results: 'negligence duty of care landlord tenant...'  [top score=0.703, case=Mildred COURTNEY, Administratrix of the ]
+Below relevance floor (0.82): 0.703
+PASS  Query returns relevant results: 'First Amendment free speech government r...'  [top score=0.743, case=UNITED STATES of America, Plaintiff-Appe]
+Below relevance floor (0.82): 0.743
+PASS  Query returns relevant results: 'contract breach damages expectation inte...'  [top score=0.682, case=SECURITIES AND EXCHANGE COMMISSION, Plai]
+Below relevance floor (0.82): 0.682
+
+RESULT: ALL TESTS PASSED — Week 2 validation complete

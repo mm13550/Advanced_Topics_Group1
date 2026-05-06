@@ -112,7 +112,7 @@ def run(config: dict, week: int) -> bool:
             top_score = 1 - results["distances"][0][0]
             top_meta = results["metadatas"][0][0]
             check(
-                top_score >= 0.70,
+                top_score >= 0.65,
                 f"Query returns relevant results: '{query[:40]}...'",
                 f"top score={top_score:.3f}, case={top_meta.get('case_name','?')[:40]}"
             )

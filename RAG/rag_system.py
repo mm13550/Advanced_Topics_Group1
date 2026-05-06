@@ -4,6 +4,7 @@ Combines retrieval from case database with LLM generation using IRAC framework.
 """
 
 import os
+import re
 import json
 import sys
 from datetime import datetime
@@ -68,25 +69,25 @@ class RAGSystem:
         Returns:
             Formatted system prompt
         """
-        return f"""You are a legal research assistant. Answer the user's question using the IRAC framework (Issue, Rule, Application, Conclusion).
+        return f"""You are a legal research assistant. Answer ONLY from the retrieved case excerpts below.
 
-Use the following legal cases as supporting precedent:
+    Retrieved cases:
+    {context}
 
-{context}
+    Output format (must follow exactly):
+    1. Start with `Final Answer:` on one line, followed by a direct 1-2 sentence answer.
+    2. Then provide an IRAC analysis with these exact labels on separate lines:
+       - `Issue:`
+       - `Rule:`
+       - `Application:`
+       - `Conclusion:`
 
-Instructions:
-1. Structure your response using IRAC:
-   - Issue: State the legal question
-   - Rule: Identify relevant legal principles from the provided cases
-   - Application: Apply the rules to the question
-   - Conclusion: Provide a clear answer
-
-2. Cite specific cases when referencing legal principles
-3. Be precise and professional
-4. If the provided cases don't fully address the question, acknowledge this
-5. Do not fabricate case citations beyond what is provided
-
-Provide a thorough legal analysis based on the precedents given."""
+    Evidence and citation rules:
+    1. Use only the retrieved cases; do not use outside knowledge.
+    2. When citing support, use citations exactly as provided in context metadata.
+    3. If quoting text from a case, keep quotes short and relevant.
+    4. If the retrieved cases do not directly answer the question, explicitly say so in `Final Answer` and `Conclusion`.
+    5. Never fabricate citations or case details."""
     
     def _build_baseline_prompt(self) -> str:
         """Build system prompt for baseline (no IRAC, no retrieval)."""
@@ -113,7 +114,8 @@ Be precise, professional, and acknowledge if you're uncertain about specific pre
         mode: str = "rag",
         top_k: int = 3,
         max_tokens: int = 800,
-        temperature: float = 0.3
+        temperature: float = 0.3,
+        chat_history: Optional[List[Dict]] = None
     ) -> Dict:
         """
         Generate response to legal query.
@@ -146,11 +148,11 @@ Be precise, professional, and acknowledge if you're uncertain about specific pre
         else:
             system_prompt = self._build_baseline_prompt()
         
-        messages = [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": query}
-        ]
-        
+        messages = [{"role": "system", "content": system_prompt}]
+        if chat_history:
+            messages.extend(chat_history)
+        messages.append({"role": "user", "content": query})
+
         try:
             completion = self.client.chat.completions.create(
                 model=self.model_name,
@@ -158,23 +160,23 @@ Be precise, professional, and acknowledge if you're uncertain about specific pre
                 max_tokens=max_tokens,
                 temperature=temperature
             )
-            
-            response = completion.choices[0].message.content
-            
+
+            final_answer = completion.choices[0].message.content.strip()
+
             result = {
                 "query": query,
-                "response": response,
+                "response": final_answer,
                 "mode": mode,
                 "retrieved_cases": retrieved_cases,
                 "num_cases_retrieved": len(retrieved_cases),
                 "timestamp": datetime.now().isoformat(),
                 "model": self.model_name
             }
-            
+
             self.conversation_history.append(result)
-            
+
             return result
-            
+
         except Exception as e:
             return {
                 "query": query,

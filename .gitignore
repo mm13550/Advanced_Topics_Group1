@@ -1,1 +1,8 @@
-".env" 
+.env
+.env.local
+data/data/chroma_db/
+venv/
+__pycache__/
+*.pyc
+*.pkl
+*.faiss
