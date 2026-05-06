@@ -93,9 +93,10 @@ def run(config: dict, week: int) -> bool:
 
         # Small test queries
         test_queries = [
-            "negligence duty of care landlord tenant",
-            "First Amendment free speech government restriction",
-            "contract breach damages expectation interest"
+            "What standard of review was applied in New York Times v. Sullivan?",
+            "Find cases involving freedom of speech decided after 2000.",
+            "Can police search my house without a warrant?",
+            "Find discrimination cases excluding race-based claims."
         ]
 
         embeddings = HuggingFaceEmbeddings(
@@ -105,7 +106,7 @@ def run(config: dict, week: int) -> bool:
         for query in test_queries:
             results = collection.query(
                 query_embeddings=[embeddings.embed_query(query)],
-                n_results=3,
+                n_results=4,
                 include=["metadatas", "distances"]
             )
             top_score = 1 - results["distances"][0][0]
