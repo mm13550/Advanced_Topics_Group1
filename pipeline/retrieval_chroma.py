@@ -99,7 +99,7 @@ class ChromaDBRetrievalPipeline:
             768-dim float32 numpy array, L2-normalized.
         """
         embedding = self.embedding_model.encode(
-            query,
+            "Represent this sentence for searching relevant passages: " + query,
             normalize_embeddings=True,
             show_progress_bar=False
         )

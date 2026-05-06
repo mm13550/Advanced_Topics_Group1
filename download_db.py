@@ -15,8 +15,8 @@ import tarfile
 from pathlib import Path
 
 
-HF_REPO_ID  = "hanwenzhang01/legal-rag-chromadb-10k"
-FILENAME    = "chroma_db_10k.tar.gz"
+HF_REPO_ID  = "hanwenzhang01/legal-rag-chromadb-20k"
+FILENAME    = "chroma_db_20k.tar.gz"
 EXTRACT_DIR = "data"
 CHROMA_DIR  = "data/chroma_db"
 
@@ -53,6 +53,11 @@ def download_db():
 
     # Clean up compressed file
     os.remove(local_path)
+    # Also remove HF cache dirs left behind
+    import shutil
+    cache_dir = Path(EXTRACT_DIR) / "models--hanwenzhang01-legal-rag-chromadb-20k"
+    if cache_dir.exists():
+        shutil.rmtree(cache_dir)
     print("Removed compressed file.")
 
     print()
