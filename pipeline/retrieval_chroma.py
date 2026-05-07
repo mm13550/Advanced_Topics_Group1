@@ -163,7 +163,6 @@ class ChromaDBRetrievalPipeline:
 
         n_retrieve = stage1_candidates if self.use_reranker else top_k
 
-
         # Metadata filter
         where_clause = None
         conditions = []
@@ -252,13 +251,15 @@ class ChromaDBRetrievalPipeline:
             
         # Post-filter by court name if specified
         if court_contains:
-            stage1_results = [
+            filtered = [
                 r for r in stage1_results
                 if court_contains.lower() in r["court"].lower()
             ]
-
-        if not stage1_results:
-            return []
+            # Fallback to unfiltered if court filter removes everything
+            if not filtered:
+                print(f"Warning: court_contains='{court_contains}' matched no results, ignoring filter")
+            else:
+                stage1_results = filtered
 
         # Cross-encoder reranking
         if self.use_reranker and self.reranker is not None and len(stage1_results) > 1:

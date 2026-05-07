@@ -208,6 +208,8 @@ def process_corpus(config: dict, max_cases: int = None, resume: bool = False) ->
         token=config["secrets"]["HF_TOKEN"],
     )
 
+    ds = ds.shuffle(seed=42, buffer_size=10000)  # NEED TO TEST
+
     n_processed = n_skipped_jur = n_skipped_text = n_skipped_dup = n_errors = 0
     batch_docs: list[Document] = []
     batch_ids:  list[str]      = []

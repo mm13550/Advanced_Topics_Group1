@@ -12,6 +12,7 @@ from typing import List, Dict, Optional
 from dotenv import load_dotenv
 
 from pipeline.retrieval_chroma import ChromaDBRetrievalPipeline
+from pipeline.query_decomposer import QueryDecomposer
 
 class RAGSystem:
     """
@@ -41,6 +42,7 @@ class RAGSystem:
         #self.retriever = RetrievalPipeline(vector_db_path)
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
         self.retriever = ChromaDBRetrievalPipeline(vector_db_path)
+        self.decomposer = QueryDecomposer()
         
         api_key = os.getenv("GROQ_API_KEY")
         if not api_key:
@@ -134,17 +136,38 @@ Be precise, professional, and acknowledge if you're uncertain about specific pre
         retrieved_cases = []
         
         if mode == "rag":
-            retrieved_cases = self.retriever.retrieve(query, top_k=top_k)
+            # Decompose query into semantic query + metadata filters
+            decomposed = self.decomposer.decompose(query)
+            semantic_query = decomposed["semantic_query"]
+
+            if decomposed["was_decomposed"]:
+                print(f"Query decomposed: '{semantic_query}'")
+                active_filters = {
+                    k: v for k, v in decomposed.items()
+                    if k in ("year_min", "year_max", "court_contains")
+                    and v is not None
+                }
+                if active_filters:
+                    print(f"Metadata filters: {active_filters}")
+            
+            retrieved_cases = self.retriever.retrieve(
+                semantic_query,
+                top_k=top_k,
+                year_min=decomposed["year_min"],
+                year_max=decomposed["year_max"],
+                court_contains=decomposed["court_contains"]
+            )
             
             if not retrieved_cases:
                 print("Warning: No relevant cases found, falling back to IRAC-only mode")
                 mode = "irac_only"
-        
-        if mode == "rag":
-            context = self.retriever.format_context(retrieved_cases)
-            system_prompt = self._build_irac_prompt(query, context)
-        elif mode == "irac_only":
+            else:
+                context = self.retriever.format_context(retrieved_cases)
+                system_prompt = self._build_irac_prompt(query, context)
+            
+        if mode == "irac_only":
             system_prompt = self._build_irac_only_prompt()
+            
         else:
             system_prompt = self._build_baseline_prompt()
         
