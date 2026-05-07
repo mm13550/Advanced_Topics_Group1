@@ -4,9 +4,9 @@ Web Interface for RAG Legal Assistant
 
 import sys
 import io
+import re
 import wave
 import base64
-import re
 import numpy as np
 from pathlib import Path
 
@@ -119,67 +119,6 @@ def create_interface():
 
     rag_system = RAGSystem()
 
-    def _format_response_for_chat(raw_response: str) -> str:
-        """Render model output as Final Answer first, then IRAC reasoning."""
-        text = (raw_response or "").strip()
-        if not text:
-            return ""
-
-        labels = ["final answer", "issue", "rule", "application", "conclusion"]
-        sections = {label: "" for label in labels}
-
-        # Parse both inline and multiline labels, e.g.
-        # "Issue: ... Rule: ... Application: ... Conclusion: ..."
-        section_pattern = re.compile(
-            r"(?is)(final answer|issue|rule|application|conclusion)\s*:\s*(.*?)"
-            r"(?=(?:\s|\n)*(?:final answer|issue|rule|application|conclusion)\s*:|$)"
-        )
-        for match in section_pattern.finditer(text):
-            label = match.group(1).lower()
-            content = re.sub(r"\s+", " ", match.group(2)).strip()
-            # Remove accidental nested label prefixes like "Issue: Issue: ..."
-            content = re.sub(
-                r"(?is)^(final answer|issue|rule|application|conclusion)\s*:\s*",
-                "",
-                content,
-            ).strip()
-            if content:
-                sections[label] = content
-
-        final_answer = sections["final answer"]
-        issue = sections["issue"]
-        rule = sections["rule"]
-        application = sections["application"]
-        conclusion = sections["conclusion"]
-
-        # Fallback when the model misses labels.
-        if not any([final_answer, issue, rule, application, conclusion]):
-            paragraphs = [p.strip() for p in re.split(r"\n\s*\n", text) if p.strip()]
-            final_answer = paragraphs[0] if paragraphs else text
-            rest = paragraphs[1:] if len(paragraphs) > 1 else []
-            issue = rest[0] if len(rest) > 0 else ""
-            rule = rest[1] if len(rest) > 1 else ""
-            application = rest[2] if len(rest) > 2 else ""
-            conclusion = rest[3] if len(rest) > 3 else ""
-
-        if not final_answer:
-            final_answer = conclusion or "No direct answer found from retrieved cases."
-
-        out = [
-            "### Final Answer",
-            f"> {final_answer}",
-            "\n### IRAC Reasoning",
-            "#### Issue",
-            issue or "Not clearly stated.",
-            "\n#### Rule",
-            rule or "Not clearly stated.",
-            "\n#### Application",
-            application or "Not clearly stated.",
-            "\n#### Conclusion",
-            conclusion or final_answer,
-        ]
-        return "\n\n".join(out)
-
     def _build_metadata(result: dict) -> str:
         if not result.get("retrieved_cases"):
             return "No cases retrieved."
@@ -212,13 +151,20 @@ def create_interface():
         )
 
         response = result["response"]
-        display_response = _format_response_for_chat(response)
-        new_turns = [
+        display = re.sub(
+            r"^(Final Answer|Issue|Rule|Application|Conclusion)\s*:",
+            r"**\1:**",
+            response,
+            flags=re.MULTILINE | re.IGNORECASE,
+        )
+        history = history + [
             {"role": "user", "content": query},
-            {"role": "assistant", "content": display_response},
+            {"role": "assistant", "content": display},
         ]
-        history = history + new_turns
-        llm_history = llm_history + new_turns
+        llm_history = llm_history + [
+            {"role": "user", "content": query},
+            {"role": "assistant", "content": response},
+        ]
         return "", history, llm_history, _build_metadata(result), response
 
     # ------------------------------------------------------------------ UI --
