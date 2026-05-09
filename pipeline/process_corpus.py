@@ -11,19 +11,14 @@ To run:
 """
 
 import argparse
-import itertools
 import re
 import time
 from pathlib import Path
-
-from datetime import datetime
-from typing import Optional
 
 import chromadb
 from chromadb.config import Settings
 from datasets import load_dataset
 from huggingface_hub import login
-from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 from tqdm import tqdm
@@ -35,13 +30,11 @@ from pipeline.config_loader import load_config
 FIELD_MAP = {
     "case_id": "id",
     "text": "text",
-    "jurisdiction": None,       # we will try to extract this later
     "date": None,       # extracted from text via regex
     "case_name": None,       # extracted from text via regex
     "court": None       # extracted from text via regex
 }
 
-JURISDICTION_SUBKEY = None
 COURT_SUBKEY = None
 
 # Month abbreviation regex
@@ -254,10 +247,6 @@ def process_corpus(config: dict, max_cases: int = None, resume: bool = False) ->
             year = parsed["year"]
             date_str = parsed["date_str"]
             case_name = parsed["case_name"]
-
-            # TODO: jurisdiction extraction
-            # Jurisdiction is hard to parse out, so set to empty for now
-            jurisdiction = ""
             
             # Split documents into chunks
             raw_doc = Document(
@@ -265,7 +254,6 @@ def process_corpus(config: dict, max_cases: int = None, resume: bool = False) ->
                 metadata={
                     "case_id": case_id,
                     "case_name": case_name,
-                    "jurisdiction": jurisdiction,
                     "year": year,
                     "court": court
                 }
