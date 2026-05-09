@@ -5,6 +5,7 @@ Compares baseline LLM vs RAG system across multiple metrics.
 
 import json
 import re
+import csv
 from typing import List, Dict, Tuple
 from datetime import datetime
 import numpy as np
@@ -19,7 +20,7 @@ class RAGEvaluator:
     - Baseline vs RAG comparison
     """
     
-    def __init__(self, vector_db_path: str = "vector_db.pkl"):
+    def __init__(self, vector_db_path: str = "data/chroma_db"):
         from rag_system import RAGSystem
         from baseline_llm import BaseLLM
         
@@ -195,10 +196,13 @@ class RAGEvaluator:
         with open(save_path, 'w') as f:
             json.dump(full_results, f, indent=2)
         
+        csv_path = save_path.replace('.json', '_for_review.csv')
+        self.export_rag_results_to_csv(csv_path)
+
         print(f"\nEvaluation complete. Results saved to {save_path}")
         
         return full_results
-    
+
     def _aggregate_results(self) -> Dict:
         """Aggregate results across all queries."""
         
@@ -273,6 +277,43 @@ class RAGEvaluator:
         print(f"  Legal Terms: {summary['rag']['responses_with_legal_terms']:.2%}")
         
         print("\n" + "="*60)
+
+    def export_rag_results_to_csv(self, csv_path: str = "rag_evaluation_for_review.csv"):
+        """
+        Export RAG prompts and responses to CSV format for human evaluation.
+        Includes empty columns for human annotators to fill in.
+
+        Args:
+            csv_path: Path to save CSV file
+        """
+        if not self.results:
+            print("No results to export. Run evaluation first.")
+            return
+
+        with open(csv_path, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.DictWriter(f, fieldnames=[
+                'Query',
+                'RAG Response',
+                'Relevance',
+                'Informativeness',
+                'Legal Accuracy',
+                'Citation / Grounding Accuracy',
+                'Appropriate Caution'
+            ])
+            writer.writeheader()
+
+            for result in self.results:
+                writer.writerow({
+                    'Query': result['query'],
+                    'RAG Response': result['rag']['response'],
+                    'Relevance': '',
+                    'Informativeness': '',
+                    'Legal Accuracy': '',
+                    'Citation / Grounding Accuracy': '',
+                    'Appropriate Caution': ''
+                })
+
+        print(f"RAG results exported to {csv_path}")
 
 
 def run_default_evaluation():

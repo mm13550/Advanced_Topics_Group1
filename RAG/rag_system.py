@@ -141,9 +141,11 @@ Be precise, professional, and acknowledge if you're uncertain about specific pre
         if mode == "rag":
             # Decompose query into semantic query + metadata filters
             decomposed = self.decomposer.decompose(query)
-            semantic_query = decomposed["semantic_query"]
+            # If the decomposer cannot rewrite the query, keep the original text
+            # so retrieval still works for non-legal or very broad questions.
+            semantic_query = decomposed.get("semantic_query") or query
 
-            if decomposed["was_decomposed"]:
+            if decomposed.get("was_decomposed"):
                 print(f"Query decomposed: '{semantic_query}'")
                 active_filters = {
                     k: v for k, v in decomposed.items()
