@@ -184,29 +184,29 @@ def get_chroma_collection(config: dict) -> chromadb.Collection:
 def process_corpus(config: dict, max_cases: int = None, resume: bool = False) -> None:
     min_text_len = config["corpus"]["min_text_length"]
 
+ 
     print("CORPUS PROCESSING (ChromaDB)")
     print(f"  ChromaDB directory: {config['chroma']['persist_directory']}")
     print(f"  Collection: {config['chroma']['collection_name']}")
     print(f"  Max cases: {max_cases or 'all'}")
     print(f"  Resume? {resume}")
-    print()
-
+ 
     login(token=config["secrets"]["HF_TOKEN"], add_to_git_credential=False)
     collection = get_chroma_collection(config)
-
+ 
     existing_ids: set = set()
     if resume:
         existing = collection.get(include=[])
         existing_ids = set(existing["ids"])
         print(f"Resume with {len(existing_ids):,} chunks already in the collection")
-
+ 
     # Text splitter with legal section separators
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=config["chunking"]["chunk_size"],
         chunk_overlap=config["chunking"]["chunk_overlap"],
         separators=config["chunking"]["separators"],
     )
-
+ 
     # Stream in dataset from huggingface
     # Avoids loading everything into memory, important when we start scaling
     print(f"Streaming: {config['datasets']['cap_text_repo']}")
@@ -216,99 +216,103 @@ def process_corpus(config: dict, max_cases: int = None, resume: bool = False) ->
         streaming=True,
         token=config["secrets"]["HF_TOKEN"],
     )
-
+ 
     ds = ds.shuffle(seed=42, buffer_size=10000)
-
-    n_processed = n_skipped_jur = n_skipped_text = n_skipped_dup = n_errors = 0
+ 
+    n_processed = n_skipped_text = n_skipped_dup = n_errors = 0
     batch_docs: list[Document] = []
     batch_ids:  list[str]      = []
     BATCH_SIZE = 200
-
+ 
     start = time.time()
     pbar = tqdm(desc="Processing", unit="cases", dynamic_ncols=True)
-
+ 
     try:
         for record in ds:
-            # Extract relevant fields
-            case_id = str(record.get("id", "")).strip()
-            text = str(record.get("text", "")).strip()
-
-            meta_dict = record.get("metadata", {})
-            source_url = meta_dict.get("url", "") if isinstance(meta_dict, dict) else ""
-
-            if not case_id or not text or len(text) < min_text_len:
-                n_skipped_text += 1
-                pbar.update(1)
-                continue
-
-            # Parse court, year, date, and case_name from text header
-            parsed = parse_header(text)
-            court = parsed["court"]
-            year = parsed["year"]
-            date_str = parsed["date_str"]
-            case_name = parsed["case_name"]
-            
-            # Split documents into chunks
-            raw_doc = Document(
-                page_content=text,
-                metadata={
-                    "case_id": case_id,
-                    "case_name": case_name,
-                    "year": year,
-                    "court": court
-                }
-            )
-            chunks: list[Document] = splitter.split_documents([raw_doc])
-
-            if not chunks:
-                n_skipped_text += 1
-                pbar.update(1)
-                continue
-
-            # When resuming, de-duplicate chunks
-            new_chunks_added = 0
-            for i, chunk in enumerate(chunks):
-                chunk_id = f"{case_id}__chunk{i}"
-                if resume and chunk_id in existing_ids:
-                    n_skipped_dup += 1
+            try:
+                # Extract relevant fields
+                case_id = str(record.get("id", "")).strip()
+                text = str(record.get("text", "")).strip()
+ 
+                if not case_id or not text or len(text) < min_text_len:
+                    n_skipped_text += 1
+                    pbar.update(1)
                     continue
-                chunk.metadata["chunk_index"] = i
-                chunk.metadata["chunk_id"] = chunk_id
-                batch_docs.append(chunk)
-                batch_ids.append(chunk_id)
-                new_chunks_added += 1
-            
-            if new_chunks_added > 0:
-                n_processed += 1
-            elif resume:
-                n_skipped_dup += 1
-            
-            pbar.update(1)
-
-            # Flush to ChromaDB
-            if len(batch_docs) >= BATCH_SIZE:
-                _flush_batch(collection, batch_docs, batch_ids, embedding_dim=768)
-                batch_docs.clear()
-                batch_ids.clear()
-
-            if max_cases and n_processed >= max_cases:
-                print(f"\nReached max_cases={max_cases}. Stopping.")
-                break
-
+ 
+                # Parse court, year, date, and case_name from text header
+                parsed = parse_header(text)
+                court = parsed["court"]
+                year = parsed["year"]
+                date_str = parsed["date_str"]
+                case_name = parsed["case_name"]
+ 
+                # Split documents into chunks
+                raw_doc = Document(
+                    page_content=text,
+                    metadata={
+                        "case_id": case_id,
+                        "case_name": case_name,
+                        "year": year,
+                        "court": court
+                    }
+                )
+                chunks: list[Document] = splitter.split_documents([raw_doc])
+ 
+                if not chunks:
+                    n_skipped_text += 1
+                    pbar.update(1)
+                    continue
+ 
+                # When resuming, de-duplicate chunks
+                new_chunks_added = 0
+                for i, chunk in enumerate(chunks):
+                    chunk_id = f"{case_id}__chunk{i}"
+                    if resume and chunk_id in existing_ids:
+                        n_skipped_dup += 1
+                        continue
+                    chunk.metadata["chunk_index"] = i
+                    chunk.metadata["chunk_id"] = chunk_id
+                    batch_docs.append(chunk)
+                    batch_ids.append(chunk_id)
+                    new_chunks_added += 1
+ 
+                if new_chunks_added > 0:
+                    n_processed += 1
+                elif resume:
+                    n_skipped_dup += 1
+ 
+                pbar.update(1)
+ 
+                # Flush to ChromaDB
+                if len(batch_docs) >= BATCH_SIZE:
+                    _flush_batch(collection, batch_docs, batch_ids, embedding_dim=768)
+                    batch_docs.clear()
+                    batch_ids.clear()
+ 
+                if max_cases and n_processed >= max_cases:
+                    print(f"\nReached max_cases={max_cases}. Stopping.")
+                    break
+ 
+            except Exception as e:
+                n_errors += 1
+                case_id_display = record.get("id", "unknown") if isinstance(record, dict) else "unknown"
+                print(f"\n  Error processing case {case_id_display}: {e}")
+                pbar.update(1)
+                continue
+ 
     except KeyboardInterrupt:
         print("\nInterrupted — flushing remaining batch...")
     finally:
         if batch_docs:
             _flush_batch(collection, batch_docs, batch_ids, embedding_dim=768)
         pbar.close()
-
+ 
     elapsed = time.time() - start
     total_chunks = collection.count()
     print()
     print("PROCESSING COMPLETE")
     print(f"  Total time: {elapsed/60:.1f} minutes")
     print(f"  Cases processed: {n_processed:,}")
-    print(f"  Skipped (jur): {n_skipped_jur:,}")
     print(f"  Skipped (text): {n_skipped_text:,}")
     print(f"  Skipped (dup): {n_skipped_dup:,}")
     print(f"  Errors: {n_errors:,}")

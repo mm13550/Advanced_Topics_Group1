@@ -112,7 +112,7 @@ class ChromaDBRetrievalPipeline:
             768-dim float32 numpy array, L2-normalized.
         """
         embedding = self.embedding_model.encode(
-            "Represent this sentence for searching relevant passages: " + query,
+            query,
             normalize_embeddings=True,
             show_progress_bar=False
         )
@@ -250,16 +250,12 @@ class ChromaDBRetrievalPipeline:
             })
             
         # Post-filter by court name if specified
+        # Returns an empty list if no results match
         if court_contains:
-            filtered = [
+            stage1_results = [
                 r for r in stage1_results
                 if court_contains.lower() in r["court"].lower()
             ]
-            # Fallback to unfiltered if court filter removes everything
-            if not filtered:
-                print(f"Warning: court_contains='{court_contains}' matched no results, ignoring filter")
-            else:
-                stage1_results = filtered
 
         # Cross-encoder reranking
         if self.use_reranker and self.reranker is not None and len(stage1_results) > 1:

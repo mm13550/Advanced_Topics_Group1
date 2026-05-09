@@ -25,7 +25,7 @@ from tqdm import tqdm
 from pipeline.config_loader import load_config
 
 
-def compute_embeddings(config: dict, batch_size: int = 512) -> None:
+def compute_embeddings(config: dict, batch_size: int = 256) -> None:
     persist_dir = config["chroma"]["persist_directory"]
     collection_name = config["chroma"]["collection_name"]
     embedding_model = config["embeddings"]["model"]
@@ -57,23 +57,6 @@ def compute_embeddings(config: dict, batch_size: int = 512) -> None:
     all_ids_result = collection.get(include=[])
     all_ids = all_ids_result["ids"]
     print(f"{len(all_ids):,} chunks to embed")
-
-    # Filter out already-embedded chunks
-    print("Checking for existing embeddings...")
-    already_embedded = []
-    for i in range(0, len(all_ids), batch_size):
-        batch_ids = all_ids[i : i + batch_size]
-        batch_result = collection.get(
-            ids=batch_ids,
-            include=["embeddings"]
-        )
-        for uid, emb in zip(batch_ids, batch_result["embeddings"]):
-            if emb is not None and np.any(np.array(emb) != 0.0):
-                already_embedded.append(uid)
-
-    all_ids = [uid for uid in all_ids if uid not in set(already_embedded)]
-    print(f"  {len(already_embedded):,} already embedded, skipping")
-    print(f"  {len(all_ids):,} chunks to embed")
 
     # Embed in batches
     start = time.time()
@@ -139,7 +122,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--batch-size",
         type=int,
-        default=512,
+        default=256,
         help="Embedding batch size."
     )
     args = parser.parse_args()
