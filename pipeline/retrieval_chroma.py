@@ -271,8 +271,17 @@ class ChromaDBRetrievalPipeline:
 
             # Sort by rerank score descending, take top_k
             stage1_results.sort(key=lambda x: x["rerank_score"], reverse=True)
+            
+        # Deduplicate by case_id, keeping highest scoring chunk per case
+        seen_case_ids = set()
+        deduplicated = []
+        for result in stage1_results:
+            case_id = result["case_id"]
+            if case_id not in seen_case_ids:
+                seen_case_ids.add(case_id)
+                deduplicated.append(result)
 
-        return stage1_results[:top_k]
+        return deduplicated[:top_k]
 
     def format_context(
         self,

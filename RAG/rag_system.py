@@ -89,7 +89,10 @@ class RAGSystem:
     2. When citing support, use citations exactly as provided in context metadata.
     3. If quoting text from a case, keep quotes short and relevant.
     4. If the retrieved cases do not directly answer the question, explicitly say so in `Final Answer` and `Conclusion`.
-    5. Never fabricate citations or case details."""
+    5. Never fabricate citations or case details.
+    6. If the user's query contains exclusion instructions (e.g. "excluding race-based claims"),
+    explicitly respect those constraints in your response. Do not discuss excluded topics
+    even if retrieved cases mention them."""
     
     def _build_baseline_prompt(self) -> str:
         """Build system prompt for baseline (no IRAC, no retrieval)."""

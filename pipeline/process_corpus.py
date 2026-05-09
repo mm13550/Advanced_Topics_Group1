@@ -76,7 +76,7 @@ _COURT_RE = re.compile(
 
 # Case name regex: everything before the first "No." or docket number
 _CASE_NAME_RE = re.compile(
-    r"^(.+?)\s*No\.?\s+[\d\-]+",
+    r"^(.+?)\s*Nos?\.?\s+[\d\-]+",
     re.DOTALL
 )
 
@@ -132,6 +132,9 @@ def parse_header(text: str) -> dict:
         date_str = f"{month_str} {day_str}, {year_str}"
         try:
             year = int(year_str)
+            if not (1700 <= year <= 2030):
+                print(f"  Implausible year {year} rejected, setting year=0")
+                year = 0
         except ValueError:
             year = 0
             
@@ -141,6 +144,19 @@ def parse_header(text: str) -> dict:
     if name_match:
         raw = name_match.group(1).strip()
         case_name = " ".join(raw.split())[:200]
+        
+    # Fallback 1: take the first non-empty line of the header
+    # catches cases where docket number format differs
+    if not case_name:
+        for line in header.strip().splitlines():
+            line = line.strip()
+            if len(line) > 10:  # ignore very short lines like page numbers
+                case_name = line[:200]
+                break
+
+    # Fallback 2: indicate case_name could not be parsed
+    if not case_name:
+        case_name = f"Case name not found in header: {header[:100]!r}"
 
     return {
         "court": court,
@@ -208,7 +224,7 @@ def process_corpus(config: dict, max_cases: int = None, resume: bool = False) ->
         token=config["secrets"]["HF_TOKEN"],
     )
 
-    ds = ds.shuffle(seed=42, buffer_size=10000)  # NEED TO TEST
+    ds = ds.shuffle(seed=42, buffer_size=10000)
 
     n_processed = n_skipped_jur = n_skipped_text = n_skipped_dup = n_errors = 0
     batch_docs: list[Document] = []

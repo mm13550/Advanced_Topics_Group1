@@ -39,10 +39,13 @@ JSON schema:
 }
 
 Rules:
-- semantic_query must never contain years, date ranges, or court names
+- semantic_query must not contain years, date ranges, or court names
 - semantic_query should be rich in legal terminology
+- semantic_query should expand the query with related legal terminology, not compress it. Aim for 5-10 words minimum.
 - year_min and year_max are calendar years as integers (e.g. 2000)
-- "after YYYY" means year_min = YYYY + 1, "before YYYY" means year_max = YYYY - 1
+- "between YYYY and YYYY" is inclusive: year_min = first YYYY, year_max = second YYYY
+- "after YYYY" means year_min = YYYY + 1
+- "before YYYY" means year_max = YYYY - 1
 - "since YYYY" and "from YYYY" mean year_min = YYYY
 - court_contains should be a partial court name (e.g. "Supreme", "Ninth Circuit")
 - If no filters are present, return null for those fields
@@ -50,16 +53,13 @@ Rules:
 
 Examples:
 Input: "Find cases involving freedom of speech decided after 1960"
-Output: {"semantic_query": "freedom of speech First Amendment constitutional protection", "year_min": 1961, "year_max": null, "court_contains": null}
+Output: {"semantic_query": "freedom of speech", "year_min": 1961, "year_max": null, "court_contains": null}
 
 Input: "What standard of review applies in First Amendment cases?"
-Output: {"semantic_query": "standard of review First Amendment constitutional scrutiny", "year_min": null, "year_max": null, "court_contains": null}
-
-Input: "Find Supreme Court contract cases between 1950 and 1970"
-Output: {"semantic_query": "contract formation breach enforcement obligations", "year_min": 1950, "year_max": 1970, "court_contains": "Supreme Court"}
+Output: {"semantic_query": "standard of review First Amendment", "year_min": null, "year_max": null, "court_contains": null}
 
 Input: "Can police search my house without a warrant?"
-Output: {"semantic_query": "Fourth Amendment warrant requirement police search seizure", "year_min": null, "year_max": null, "court_contains": null}"""
+Output: {"semantic_query": "warrant requirement police search", "year_min": null, "year_max": null, "court_contains": null}"""
 
 _USER_PROMPT_TEMPLATE = 'User query: "{query}"'
 
