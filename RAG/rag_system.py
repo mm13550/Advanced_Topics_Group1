@@ -173,7 +173,7 @@ Be precise, professional, and acknowledge if you're uncertain about specific pre
         if mode == "irac_only":
             system_prompt = self._build_irac_only_prompt()
             
-        else:
+        elif mode == "baseline":
             system_prompt = self._build_baseline_prompt()
         
         messages = [{"role": "system", "content": system_prompt}]
