@@ -294,11 +294,9 @@ class RAGEvaluator:
             writer = csv.DictWriter(f, fieldnames=[
                 'Query',
                 'RAG Response',
-                'Relevance',
-                'Informativeness',
-                'Legal Accuracy',
-                'Citation / Grounding Accuracy',
-                'Appropriate Caution'
+                'Factual Correctness',
+                'Legal Reasoning Quality',
+                'Domain Appropriateness'
             ])
             writer.writeheader()
 
@@ -306,11 +304,9 @@ class RAGEvaluator:
                 writer.writerow({
                     'Query': result['query'],
                     'RAG Response': result['rag']['response'],
-                    'Relevance': '',
-                    'Informativeness': '',
-                    'Legal Accuracy': '',
-                    'Citation / Grounding Accuracy': '',
-                    'Appropriate Caution': ''
+                    'Factual Correctness': '',
+                    'Legal Reasoning Quality': '',
+                    'Domain Appropriateness': ''
                 })
 
         print(f"RAG results exported to {csv_path}")
