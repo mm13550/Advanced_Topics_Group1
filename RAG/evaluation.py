@@ -1,6 +1,7 @@
 """
 Evaluation Suite for RAG Legal Assistant
 Compares baseline LLM vs RAG system across multiple metrics.
+GitHub: https://github.com/Advanced_Topics_Group1
 """
 
 import json
@@ -126,7 +127,7 @@ class RAGEvaluator:
     ) -> Dict:
         """
         Run comprehensive evaluation on test queries.
-        
+
         Args:
             test_queries: List of legal questions to test
             save_path: Path to save results
@@ -135,16 +136,16 @@ class RAGEvaluator:
             Dictionary with aggregated evaluation results
         """
         print(f"Running evaluation on {len(test_queries)} queries...")
-        
+
         for i, query in enumerate(test_queries, 1):
             print(f"\nEvaluating query {i}/{len(test_queries)}: {query[:50]}...")
-            
+
             baseline_response = self.baseline.generate_response(query)
-            
+
             rag_result = self.rag.generate_response(query, mode="rag", top_k=3)
-            
+
             irac_result = self.rag.generate_response(query, mode="irac_only")
-            
+
             baseline_eval = {
                 "mode": "baseline",
                 "query": query,
@@ -153,7 +154,7 @@ class RAGEvaluator:
                 "irac_structure": self.evaluate_irac_structure(baseline_response),
                 "timestamp": datetime.now().isoformat()
             }
-            
+
             irac_eval = {
                 "mode": "irac_only",
                 "query": query,
@@ -162,12 +163,13 @@ class RAGEvaluator:
                 "irac_structure": self.evaluate_irac_structure(irac_result["response"]),
                 "timestamp": datetime.now().isoformat()
             }
-            
+
             rag_eval = {
                 "mode": "rag",
                 "query": query,
                 "response": rag_result["response"],
                 "num_cases_retrieved": rag_result["num_cases_retrieved"],
+                "retrieved_cases": rag_result["retrieved_cases"],
                 "quality": self.evaluate_response_quality(rag_result["response"]),
                 "irac_structure": self.evaluate_irac_structure(rag_result["response"]),
                 "citations": self.evaluate_citation_accuracy(
@@ -176,7 +178,7 @@ class RAGEvaluator:
                 ),
                 "timestamp": datetime.now().isoformat()
             }
-            
+
             self.results.append({
                 "query": query,
                 "baseline": baseline_eval,
@@ -196,8 +198,8 @@ class RAGEvaluator:
         with open(save_path, 'w') as f:
             json.dump(full_results, f, indent=2)
         
-        csv_path = save_path.replace('.json', '_for_review.csv')
-        self.export_rag_results_to_csv(csv_path)
+        self.export_rag_results_to_csv("human_evaluation.csv")
+        self.export_relevance_table_to_csv("relevance_table.csv")
 
         print(f"\nEvaluation complete. Results saved to {save_path}")
         
@@ -206,46 +208,60 @@ class RAGEvaluator:
     def _aggregate_results(self) -> Dict:
         """Aggregate results across all queries."""
         
-        baseline_irac = [r["baseline"]["irac_structure"]["compliance_score"] for r in self.results]
-        irac_only_irac = [r["irac_only"]["irac_structure"]["compliance_score"] for r in self.results]
-        rag_irac = [r["rag"]["irac_structure"]["compliance_score"] for r in self.results]
+        baseline_results = [r["baseline"] for r in self.results if r.get("baseline")]
+        irac_only_results = [r["irac_only"] for r in self.results if r.get("irac_only")]
+        rag_results = [r["rag"] for r in self.results if r.get("rag")]
+
+        def safe_mean(values):
+            return float(np.mean(values)) if values else 0.0
+
+        baseline_irac = [r["irac_structure"]["compliance_score"] for r in baseline_results]
+        irac_only_irac = [r["irac_structure"]["compliance_score"] for r in irac_only_results]
+        rag_irac = [r["irac_structure"]["compliance_score"] for r in rag_results]
         
-        baseline_words = [r["baseline"]["quality"]["word_count"] for r in self.results]
-        irac_only_words = [r["irac_only"]["quality"]["word_count"] for r in self.results]
-        rag_words = [r["rag"]["quality"]["word_count"] for r in self.results]
+        baseline_words = [r["quality"]["word_count"] for r in baseline_results]
+        irac_only_words = [r["quality"]["word_count"] for r in irac_only_results]
+        rag_words = [r["quality"]["word_count"] for r in rag_results]
         
-        rag_citations = [r["rag"]["citations"]["total_citations"] for r in self.results]
+        rag_citations = [r["citations"]["total_citations"] for r in rag_results]
         rag_citation_accuracy = [
-            r["rag"]["citations"]["citation_accuracy"] 
-            for r in self.results 
-            if r["rag"]["citations"]["total_citations"] > 0
+            r["citations"]["citation_accuracy"] 
+            for r in rag_results 
+            if r["citations"]["total_citations"] > 0
         ]
-        
-        return {
-            "baseline": {
-                "avg_irac_compliance": np.mean(baseline_irac),
-                "avg_word_count": np.mean(baseline_words),
-                "responses_with_legal_terms": sum(
-                    r["baseline"]["quality"]["has_legal_terms"] for r in self.results
-                ) / len(self.results)
-            },
-            "irac_only": {
-                "avg_irac_compliance": np.mean(irac_only_irac),
-                "avg_word_count": np.mean(irac_only_words),
-                "responses_with_legal_terms": sum(
-                    r["irac_only"]["quality"]["has_legal_terms"] for r in self.results
-                ) / len(self.results)
-            },
+
+        summary = {
             "rag": {
-                "avg_irac_compliance": np.mean(rag_irac),
-                "avg_word_count": np.mean(rag_words),
-                "avg_citations": np.mean(rag_citations),
-                "avg_citation_accuracy": np.mean(rag_citation_accuracy) if rag_citation_accuracy else 0.0,
-                "responses_with_legal_terms": sum(
-                    r["rag"]["quality"]["has_legal_terms"] for r in self.results
-                ) / len(self.results)
+                "avg_irac_compliance": safe_mean(rag_irac),
+                "avg_word_count": safe_mean(rag_words),
+                "avg_citations": safe_mean(rag_citations),
+                "avg_citation_accuracy": safe_mean(rag_citation_accuracy),
+                "responses_with_legal_terms": (
+                    sum(r["quality"]["has_legal_terms"] for r in rag_results) / len(rag_results)
+                    if rag_results else 0.0
+                )
             }
         }
+
+        if baseline_results:
+            summary["baseline"] = {
+                "avg_irac_compliance": safe_mean(baseline_irac),
+                "avg_word_count": safe_mean(baseline_words),
+                "responses_with_legal_terms": (
+                    sum(r["quality"]["has_legal_terms"] for r in baseline_results) / len(baseline_results)
+                )
+            }
+
+        if irac_only_results:
+            summary["irac_only"] = {
+                "avg_irac_compliance": safe_mean(irac_only_irac),
+                "avg_word_count": safe_mean(irac_only_words),
+                "responses_with_legal_terms": (
+                    sum(r["quality"]["has_legal_terms"] for r in irac_only_results) / len(irac_only_results)
+                )
+            }
+
+        return summary
     
     def print_summary(self):
         """Print evaluation summary to console."""
@@ -259,15 +275,17 @@ class RAGEvaluator:
         print("EVALUATION SUMMARY")
         print("="*60)
         
-        print("\nBASELINE (No IRAC, No Retrieval):")
-        print(f"  IRAC Compliance: {summary['baseline']['avg_irac_compliance']:.2%}")
-        print(f"  Avg Word Count: {summary['baseline']['avg_word_count']:.0f}")
-        print(f"  Legal Terms: {summary['baseline']['responses_with_legal_terms']:.2%}")
-        
-        print("\nIRAC ONLY (IRAC, No Retrieval):")
-        print(f"  IRAC Compliance: {summary['irac_only']['avg_irac_compliance']:.2%}")
-        print(f"  Avg Word Count: {summary['irac_only']['avg_word_count']:.0f}")
-        print(f"  Legal Terms: {summary['irac_only']['responses_with_legal_terms']:.2%}")
+        if "baseline" in summary:
+            print("\nBASELINE (No IRAC, No Retrieval):")
+            print(f"  IRAC Compliance: {summary['baseline']['avg_irac_compliance']:.2%}")
+            print(f"  Avg Word Count: {summary['baseline']['avg_word_count']:.0f}")
+            print(f"  Legal Terms: {summary['baseline']['responses_with_legal_terms']:.2%}")
+
+        if "irac_only" in summary:
+            print("\nIRAC ONLY (IRAC, No Retrieval):")
+            print(f"  IRAC Compliance: {summary['irac_only']['avg_irac_compliance']:.2%}")
+            print(f"  Avg Word Count: {summary['irac_only']['avg_word_count']:.0f}")
+            print(f"  Legal Terms: {summary['irac_only']['responses_with_legal_terms']:.2%}")
         
         print("\nRAG (IRAC + Retrieval):")
         print(f"  IRAC Compliance: {summary['rag']['avg_irac_compliance']:.2%}")
@@ -278,7 +296,7 @@ class RAGEvaluator:
         
         print("\n" + "="*60)
 
-    def export_rag_results_to_csv(self, csv_path: str = "rag_evaluation_for_review.csv"):
+    def export_rag_results_to_csv(self, csv_path: str = "human_evaluation.csv"):
         """
         Export RAG prompts and responses to CSV format for human evaluation.
         Includes empty columns for human annotators to fill in.
@@ -294,9 +312,11 @@ class RAGEvaluator:
             writer = csv.DictWriter(f, fieldnames=[
                 'Query',
                 'RAG Response',
-                'Factual Correctness',
-                'Legal Reasoning Quality',
-                'Domain Appropriateness'
+                'Relevance',
+                'Informativeness',
+                'Legal Accuracy',
+                'Citation / Grounding Accuracy',
+                'Appropriate Caution'
             ])
             writer.writeheader()
 
@@ -304,12 +324,62 @@ class RAGEvaluator:
                 writer.writerow({
                     'Query': result['query'],
                     'RAG Response': result['rag']['response'],
-                    'Factual Correctness': '',
-                    'Legal Reasoning Quality': '',
-                    'Domain Appropriateness': ''
+                    'Relevance': '',
+                    'Informativeness': '',
+                    'Legal Accuracy': '',
+                    'Citation / Grounding Accuracy': '',
+                    'Appropriate Caution': ''
                 })
 
         print(f"RAG results exported to {csv_path}")
+
+    def export_relevance_table_to_csv(self, csv_path: str = "relevance_table.csv"):
+        """
+        Export a retrieval relevance table for manual binary relevance labeling.
+
+        Columns:
+            query_id, query, retrieved_rank, case_name, is_relevant
+        """
+        if not self.results:
+            print("No results to export. Run evaluation first.")
+            return
+
+        with open(csv_path, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.DictWriter(f, fieldnames=[
+                'query_id',
+                'query',
+                'retrieved_rank',
+                'case_name',
+                'is_relevant'
+            ])
+            writer.writeheader()
+
+            for query_id, result in enumerate(self.results, start=1):
+                retrieved_cases = result['rag'].get('retrieved_cases', [])
+                
+                # Filter to cases with non-empty case_name
+                valid_cases = [c for c in retrieved_cases if c.get('case_name', '').strip()]
+
+                if not valid_cases:
+                    writer.writerow({
+                        'query_id': query_id,
+                        'query': result['query'],
+                        'retrieved_rank': '',
+                        'case_name': '',
+                        'is_relevant': ''
+                    })
+                    continue
+
+                for rank, case in enumerate(valid_cases, start=1):
+                    writer.writerow({
+                        'query_id': query_id,
+                        'query': result['query'],
+                        'retrieved_rank': rank,
+                        'case_name': case.get('case_name', '').strip(),
+                        'is_relevant': ''
+                    })
+
+        print(f"Relevance table exported to {csv_path}")
 
 
 def run_default_evaluation():
@@ -368,14 +438,18 @@ def run_default_evaluation():
     evaluator = RAGEvaluator()
     results = evaluator.run_evaluation(test_queries)
     evaluator.print_summary()
-    
+
     return results
 
 
 if __name__ == "__main__":
-    import sys
-    
-    if len(sys.argv) > 1 and sys.argv[1] == "custom":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Run RAG evaluation")
+    parser.add_argument("--custom", action="store_true", help="Enter custom queries interactively")
+    args = parser.parse_args()
+
+    if args.custom:
         print("Enter test queries: ")
         queries = []
         while True:
@@ -383,7 +457,7 @@ if __name__ == "__main__":
             if not query:
                 break
             queries.append(query)
-        
+
         if queries:
             evaluator = RAGEvaluator()
             evaluator.run_evaluation(queries)
